@@ -8,13 +8,15 @@ import {
   FlatList,
   ScrollView,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import tw from "twrnc";
 import {
   ChevronLeftIcon,
   MagnifyingGlassIcon,
   EllipsisHorizontalIcon,
 } from "react-native-heroicons/outline";
+import { YOUTUBE_APIKEY } from "@env";
+import axios from "axios";
 
 const trending = [
   {
@@ -100,6 +102,19 @@ const streamers = [
 ];
 
 const DiscoverScreen = () => {
+  const [trendingGame, setTrendingGame] = useState([]);
+
+  useEffect(() => {
+    const getVideo = async () => {
+      const response = await axios.get(
+        `https://www.googleapis.com/youtube/v3/videos?key=${YOUTUBE_APIKEY}&chart=mostPopular&part=snippet&videoCategoryId=20`
+      );
+      const data = response.data;
+      setTrendingGame(data.items);
+    };
+    getVideo();
+  }, []);
+
   return (
     <SafeAreaView style={tw`flex flex-1 bg-black`}>
       <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
@@ -123,7 +138,7 @@ const DiscoverScreen = () => {
 
       <View style={tw`py-4 px-2`}>
         <View style={tw`pb-4`}>
-          <Text style={tw`text-white text-lg font-semibold`}>Discover</Text>
+          <Text style={tw`text-white text-lg font-semibold`}>검색하기</Text>
         </View>
         <View
           style={tw`flex flex-row bg-transparent border border-[#8758FF] items-center px-2 h-12 rounded-lg`}
@@ -142,7 +157,7 @@ const DiscoverScreen = () => {
         <View style={tw`py-4 px-2`}>
           <View style={tw`flex flex-row items-center justify-between pb-4`}>
             <Text style={tw`text-white text-lg font-semibold`}>
-              Trending Games
+              인기 실시간 게임
             </Text>
             <TouchableOpacity>
               <EllipsisHorizontalIcon color="#fff" size={28} />
@@ -152,17 +167,17 @@ const DiscoverScreen = () => {
             keyExtractor={(item) => item.id}
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={trending}
+            data={trendingGame}
             renderItem={({ item }) => (
               <TouchableOpacity style={tw`relative h-40 mx-2`}>
                 <Image
-                  source={item.imageUrl}
+                  source={{ uri: item.snippet.thumbnails.medium.url }}
                   style={tw`w-64 h-40 rounded-xl opacity-70`}
                 />
                 <Text
                   style={tw`absolute bottom-2 left-2 text-white font-semibold text-sm`}
                 >
-                  {item.name}
+                  {item.snippet.title}
                 </Text>
               </TouchableOpacity>
             )}
@@ -172,7 +187,7 @@ const DiscoverScreen = () => {
         <View style={tw`py-4 px-2 mb-16`}>
           <View style={tw`flex flex-row items-center justify-between pb-4`}>
             <Text style={tw`text-white text-lg font-semibold`}>
-              Top Streamers
+              스트리머 순위
             </Text>
             <TouchableOpacity>
               <EllipsisHorizontalIcon color="#fff" size={28} />
