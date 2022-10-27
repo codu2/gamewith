@@ -7,14 +7,14 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import tw from "twrnc";
 import {
   BellIcon,
   EllipsisHorizontalIcon,
   EyeIcon,
-  CheckCircleIcon,
 } from "react-native-heroicons/solid";
+import { CLIENT_ID, CLIENT_SECRET, TOKEN, USER_ID } from "@env";
 
 const following = [
   {
@@ -39,131 +39,124 @@ const following = [
 
 const categories = [
   {
-    id: "c1",
+    id: "512710",
     name: "CALLOFDUTY",
+    fullName: "Call of Duty: Warzone",
     imageUrl: require("../assets/game/callofduty.jpg"),
   },
   {
-    id: "c2",
+    id: "29595",
+    name: "DOTA2",
+    fullName: "Dota 2",
+    imageUrl: require("../assets/game/dota2.jpg"),
+  },
+  {
+    id: "27471",
     name: "MINECRAFT",
+    fullName: "Minecraft",
     imageUrl: require("../assets/game/minecraft.jpg"),
   },
   {
-    id: "c3",
+    id: "33214",
     name: "FORTNITE",
+    fullName: "Fortnite",
     imageUrl: require("../assets/game/fortnite.jpg"),
   },
-  { id: "c4", name: "LOL", imageUrl: require("../assets/game/lol.jpg") },
   {
-    id: "c5",
-    name: "LOSTARK",
-    imageUrl: require("../assets/game/lostark.jpg"),
+    id: "511224",
+    name: "APEXLEGENDS",
+    fullName: "Apex Legends",
+    imageUrl: require("../assets/game/apexlegends.jpg"),
   },
   {
-    id: "c6",
+    id: "21779",
+    name: "LOL",
+    fullName: "League of Legends",
+    imageUrl: require("../assets/game/lol.jpg"),
+  },
+  {
+    id: "515025",
     name: "OVERWATCH",
+    fullName: "Overwatch 2",
     imageUrl: require("../assets/game/overwatch.jpg"),
   },
-  { id: "c7", name: "PUBG", imageUrl: require("../assets/game/pubg.jpg") },
-  { id: "c8", name: "ROBLOX", imageUrl: require("../assets/game/roblox.jpg") },
   {
-    id: "c9",
+    id: "32982",
+    name: "GTAV",
+    fullName: "Grand Theft Auto V",
+    imageUrl: require("../assets/game/gtav.jpg"),
+  },
+  {
+    id: "516575",
     name: "VALORANT",
+    fullName: "VALORANT",
     imageUrl: require("../assets/game/valorant.jpg"),
   },
-];
-
-const livestreaming = [
   {
-    id: "l1",
-    channel: "VanossGaming",
-    thumnail: require("../assets/game/live1.jpg"),
-    imageUrl: require("../assets/game/s5.jpeg"),
-    viewer: 8.1,
-  },
-  {
-    id: "l2",
-    channel: "Pewdiepie",
-    thumnail: require("../assets/game/live2.jpg"),
-    imageUrl: require("../assets/game/s1.jpeg"),
-    viewer: 10.9,
-  },
-  {
-    id: "l3",
-    channel: "PlayOverWatch",
-    thumnail: require("../assets/game/live3.jpg"),
-    imageUrl: require("../assets/game/s11.jpeg"),
-    viewer: 6.7,
-  },
-];
-
-const mostviewed = [
-  {
-    id: "m1",
-    channel: "Minecraft",
-    game: "Minecraft",
-    thumnail: require("../assets/game/m1.jpg"),
-    views: 533,
-    description:
-      "The features of Minecraft give developers a creative playground where they may produce whatever kind of material they choose. As a result, it rose to the top of the platform’s games.",
-  },
-  {
-    id: "m2",
-    channel: "Fortnite",
-    game: "Fortnite",
-    thumnail: require("../assets/game/m2.jpg"),
-    views: 252.8,
-    description:
-      "Fortnite was a lot of fun to watch and play because of its cartoonish aesthetics and well-organized gameplay.",
-  },
-  {
-    id: "m3",
-    channel: "Rockstar Games",
-    game: "Grand Theft Auto V",
-    thumnail: require("../assets/game/m3.jpg"),
-    views: 170.1,
-    description:
-      "What separates GTA V from other video games is its diversity. Unlike other video games, you can create different types of videos using GTA V.",
-  },
-  {
-    id: "m4",
-    channel: "Garena Free Fire Global",
-    game: "Garena Free Fire",
-    thumnail: require("../assets/game/m4.jpg"),
-    views: 134.3,
-    description:
-      "Garena Free Fire is a popular Battle Royale that became the most downloaded mobile game in 2019. Being a Battle Royale, Free Fire allows players to stream their gameplay and showcase their shooting skills to the entire world.",
-  },
-  {
-    id: "m5",
-    channel: "Roblox",
-    game: "Roblox",
-    thumnail: require("../assets/game/m5.jpg"),
-    views: 110.8,
-    description:
-      "Roblox is a gaming platform where users can design their games and share them with other community players.",
-  },
-  {
-    id: "m6",
-    channel: "PUBG Mobile",
-    game: "PUBG Mobile",
-    thumnail: require("../assets/game/m6.jpg"),
-    views: 89.5,
-    description:
-      "In PUBG, players must engage in combat with thirty other people on a big battlefield while avoiding being eliminated by other players, just like in the vast majority of BattleRoyale games.",
-  },
-  {
-    id: "m7",
-    channel: "League of Legends",
-    game: "League of Legends",
-    thumnail: require("../assets/game/m7.jpg"),
-    views: 77.7,
-    description:
-      "League of Legends is a worldwide popular game that millions of players play every day.",
+    id: "490100",
+    name: "LOSTARK",
+    fullName: "Lost Ark",
+    imageUrl: require("../assets/game/lostark.jpg"),
   },
 ];
 
 const HomeScreen = () => {
+  const [live, setLive] = useState([]);
+  const [soundtrack, setSoundtrack] = useState([]);
+
+  useEffect(() => {
+    /*
+    const getToken = async () => {
+      const res = await axios.post(
+        `https://id.twitch.tv/oauth2/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&grant_type=client_credentials`
+      );
+      const data = await res.data;
+    };
+    getToken();
+    */
+    const getData = async () => {
+      const getLive = await fetch(
+        `https://api.twitch.tv/helix/streams?first=3`,
+        {
+          method: "GET",
+          headers: {
+            "Client-Id": CLIENT_ID,
+            Authorization: `Bearer ${TOKEN}`,
+          },
+        }
+      );
+      const live = await getLive.json();
+      setLive(live.data);
+
+      const getSoundtrack = await fetch(
+        `https://api.twitch.tv/helix/soundtrack/playlists?first=10`,
+        {
+          method: "GET",
+          headers: {
+            "Client-Id": CLIENT_ID,
+            Authorization: `Bearer ${TOKEN}`,
+          },
+        }
+      );
+      const soundtrack = await getSoundtrack.json();
+      setSoundtrack(soundtrack.data);
+
+      const getData = await fetch(
+        `https://api.twitch.tv/helix/streams/followed?user_id=${USER_ID}`,
+        {
+          method: "GET",
+          headers: {
+            "Client-Id": CLIENT_ID,
+            Authorization: `Bearer ${TOKEN}`,
+          },
+        }
+      );
+      const data = await getData.json();
+      console.log(data);
+    };
+    getData();
+  }, []);
+
   return (
     <SafeAreaView style={tw`flex flex-1 bg-black`}>
       <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
@@ -193,7 +186,9 @@ const HomeScreen = () => {
       <ScrollView>
         <View style={tw`py-4 px-2`}>
           <View style={tw`pb-4`}>
-            <Text style={tw`text-white text-lg font-semibold`}>Following</Text>
+            <Text style={tw`text-white text-lg font-semibold`}>
+              팔로우한 채널
+            </Text>
           </View>
           <FlatList
             horizontal
@@ -215,7 +210,7 @@ const HomeScreen = () => {
 
         <View style={tw`py-4 px-2`}>
           <View style={tw`flex flex-row items-center justify-between pb-4`}>
-            <Text style={tw`text-white text-lg font-semibold`}>Categories</Text>
+            <Text style={tw`text-white text-lg font-semibold`}>카테고리</Text>
             <TouchableOpacity>
               <EllipsisHorizontalIcon color="#fff" size={28} />
             </TouchableOpacity>
@@ -244,7 +239,55 @@ const HomeScreen = () => {
         <View style={tw`py-4 px-2`}>
           <View style={tw`flex flex-row items-center justify-between pb-4`}>
             <Text style={tw`text-white text-lg font-semibold`}>
-              Live Channels
+              실시간 라이브
+            </Text>
+            <TouchableOpacity>
+              <EllipsisHorizontalIcon color="#fff" size={28} />
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            horizontal
+            keyExtractor={(item) => item.id.videoId}
+            showsHorizontalScrollIndicator={false}
+            data={live}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={tw`relative w-72 h-44 mx-2`}>
+                <Image
+                  source={{
+                    uri: item.thumbnail_url
+                      ?.replace("{width}", 288)
+                      .replace("{height}", 176),
+                  }}
+                  style={tw`w-72 h-44 rounded-md opacity-70`}
+                />
+                <View style={tw`absolute top-3 left-2 flex flex-row`}>
+                  <View
+                    style={tw`bg-red-500 border border-red-500 px-2 py-1 rounded-lg`}
+                  >
+                    <Text style={tw`text-white`}>LIVE</Text>
+                  </View>
+                  <View
+                    style={tw`flex flex-row bg-gray-500 border border-gray-500 px-2 py-1 rounded-lg ml-2`}
+                  >
+                    <EyeIcon
+                      color="#fff"
+                      size={16}
+                      style={tw`text-slate-200`}
+                    />
+                    <Text style={tw`text-slate-200 ml-1`}>
+                      {(item.viewer_count / 1000).toFixed(2)}k
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+
+        <View style={tw`py-4 px-2 mb-16`}>
+          <View style={tw`flex flex-row items-center justify-between pb-4`}>
+            <Text style={tw`text-white text-lg font-semibold`}>
+              사운드트랙 플레이리스트
             </Text>
             <TouchableOpacity>
               <EllipsisHorizontalIcon color="#fff" size={28} />
@@ -254,86 +297,17 @@ const HomeScreen = () => {
             horizontal
             keyExtractor={(item) => item.id}
             showsHorizontalScrollIndicator={false}
-            data={livestreaming}
+            data={soundtrack}
             renderItem={({ item }) => (
-              <View>
-                <TouchableOpacity style={tw`relative w-70 h-44 mx-2`}>
-                  <Image
-                    source={item.thumnail}
-                    style={tw`w-70 h-44 rounded-md opacity-70`}
-                  />
-                  <View style={tw`absolute top-3 left-2 flex flex-row`}>
-                    <View
-                      style={tw`bg-red-500 border border-red-500 px-2 py-1 rounded-lg`}
-                    >
-                      <Text style={tw`text-white`}>LIVE</Text>
-                    </View>
-                    <View
-                      style={tw`flex flex-row bg-gray-500 border border-gray-500 px-2 py-1 rounded-lg ml-2`}
-                    >
-                      <EyeIcon
-                        color="#fff"
-                        size={16}
-                        style={tw`text-slate-200`}
-                      />
-                      <Text style={tw`text-slate-200 ml-1`}>
-                        {item.viewer}k
-                      </Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-                <View
-                  style={tw`w-70 h-12 px-4 py-2 mx-2 flex flex-row items-center bg-[#0d0d0d] rounded-md my-2`}
-                >
-                  <Image
-                    source={item.imageUrl}
-                    style={tw`w-8 h-8 rounded-full`}
-                  />
-                  <Text style={tw`text-gray-200 font-semibold ml-4`}>
-                    {item.channel}
-                  </Text>
-                </View>
-              </View>
-            )}
-          />
-        </View>
-
-        <View style={tw`py-4 px-2 mb-16`}>
-          <View style={tw`flex flex-row items-center justify-between pb-4`}>
-            <Text style={tw`text-white text-lg font-semibold`}>
-              Most Viewed Channels
-            </Text>
-            <TouchableOpacity>
-              <EllipsisHorizontalIcon color="#fff" size={28} />
-            </TouchableOpacity>
-          </View>
-          <FlatList
-            style={tw`h-72`}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-            data={mostviewed}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={tw`w-full h-28 flex flex-row my-2`}>
+              <TouchableOpacity style={tw`w-40 h-40 mx-2`}>
                 <Image
-                  source={item.thumnail}
-                  style={tw`w-46 h-28 rounded-sm`}
+                  source={{
+                    uri: item.image_url
+                      ?.replace("{width}", 160)
+                      .replace("{height}", 160),
+                  }}
+                  style={tw`w-40 h-40 rounded-lg`}
                 />
-                <View
-                  style={tw`relative h-28 flex flex-grow bg-[#0d0d0d] pl-4 py-2`}
-                >
-                  <Text style={tw`text-[#8758FF] text-base font-semibold mb-2`}>
-                    {item.game}
-                  </Text>
-                  <View style={tw`flex flex-row items-center`}>
-                    <Text style={tw`text-white mr-1`}>{item.channel}</Text>
-                    <CheckCircleIcon color="gray" size={12} />
-                  </View>
-                  <Text
-                    style={tw`absolute bottom-1 text-slate-300 text-xs w-full text-right`}
-                  >
-                    {item.views}k
-                  </Text>
-                </View>
               </TouchableOpacity>
             )}
           />

@@ -15,28 +15,7 @@ import {
   MagnifyingGlassIcon,
   EllipsisHorizontalIcon,
 } from "react-native-heroicons/outline";
-import { YOUTUBE_APIKEY } from "@env";
-import axios from "axios";
-
-const trending = [
-  {
-    id: "t1",
-    name: "MINECRAFT",
-    imageUrl: require("../assets/game/minecraft.jpg"),
-  },
-  {
-    id: "t2",
-    name: "FORTNITE",
-    imageUrl: require("../assets/game/fortnite.jpg"),
-  },
-  { id: "t3", name: "ROBLOX", imageUrl: require("../assets/game/roblox.jpg") },
-  { id: "t4", name: "PUBG", imageUrl: require("../assets/game/pubg.jpg") },
-  {
-    id: "t5",
-    name: "CALLOFDUTY",
-    imageUrl: require("../assets/game/callofduty.jpg"),
-  },
-];
+import { CLIENT_ID, TOKEN } from "@env";
 
 const streamers = [
   {
@@ -103,17 +82,61 @@ const streamers = [
 
 const DiscoverScreen = () => {
   const [trendingGame, setTrendingGame] = useState([]);
+  const [query, setQuery] = useState("");
+  const [searchGames, setSearchGames] = useState([]);
+  const [searchStreamers, setSearchStreamers] = useState([]);
 
   useEffect(() => {
-    const getVideo = async () => {
-      const response = await axios.get(
-        `https://www.googleapis.com/youtube/v3/videos?key=${YOUTUBE_APIKEY}&chart=mostPopular&part=snippet&videoCategoryId=20`
+    const getTrendingGame = async () => {
+      const res = await fetch("https://api.twitch.tv/helix/games/top", {
+        method: "GET",
+        headers: {
+          "Client-Id": CLIENT_ID,
+          Authorization: `Bearer ${TOKEN}`,
+        },
+      });
+      const data = await res.json();
+      const filteredGames = await data.data.filter(
+        (item) =>
+          item.id !== "509658" &&
+          item.id !== "518203" &&
+          item.id !== "29452" &&
+          item.id !== "26936"
       );
-      const data = response.data;
-      setTrendingGame(data.items);
+      setTrendingGame(filteredGames);
     };
-    getVideo();
+    getTrendingGame();
   }, []);
+
+  const onSubmit = async () => {
+    if (query) {
+      const searchGames = await fetch(
+        `https://api.twitch.tv/helix/search/categories?query=${query}`,
+        {
+          method: "GET",
+          headers: {
+            "Client-Id": CLIENT_ID,
+            Authorization: `Bearer ${TOKEN}`,
+          },
+        }
+      );
+      const games = await searchGames.json();
+      setSearchGames(games.data);
+
+      const searchStreamers = await fetch(
+        `https://api.twitch.tv/helix/search/channels?query=${query}`,
+        {
+          method: "GET",
+          headers: {
+            "Client-Id": CLIENT_ID,
+            Authorization: `Bearer ${TOKEN}`,
+          },
+        }
+      );
+      const streamers = await searchStreamers.json();
+      setSearchStreamers(streamers);
+    }
+  };
 
   return (
     <SafeAreaView style={tw`flex flex-1 bg-black`}>
@@ -149,6 +172,11 @@ const DiscoverScreen = () => {
             placeholder="Search games or streamers"
             autoComplete="false"
             placeholderTextColor={"#ccc"}
+            value={query}
+            onChangeText={(text) => {
+              setQuery(text);
+            }}
+            onSubmitEditing={onSubmit}
           />
         </View>
       </View>
@@ -169,20 +197,20 @@ const DiscoverScreen = () => {
             showsHorizontalScrollIndicator={false}
             data={trendingGame}
             renderItem={({ item }) => (
-              <TouchableOpacity style={tw`relative h-40 mx-2`}>
+              <TouchableOpacity style={tw`mx-2`}>
                 <Image
-                  source={{ uri: item.snippet.thumbnails.medium.url }}
-                  style={tw`w-64 h-40 rounded-xl opacity-70`}
+                  source={{
+                    uri: item?.box_art_url
+                      ?.replace("{width}", 240)
+                      .replace("{height}", 240),
+                  }}
+                  style={tw`w-60 h-60 rounded-xl`}
                 />
-                <Text
-                  style={tw`absolute bottom-2 left-2 text-white font-semibold text-sm`}
-                >
-                  {item.snippet.title}
-                </Text>
               </TouchableOpacity>
             )}
           />
         </View>
+        {/*240X160 */}
 
         <View style={tw`py-4 px-2 mb-16`}>
           <View style={tw`flex flex-row items-center justify-between pb-4`}>
