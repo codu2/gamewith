@@ -7,7 +7,7 @@ import {
   TextInput,
   FlatList,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import tw from "twrnc";
 import {
   ChevronLeftIcon,
@@ -33,55 +33,72 @@ const livestream = [
   },
 ];
 
-const games = [
+const categories = [
   {
-    id: "g1",
-    game: "OVERWATCH",
-    imageUrl: require("../assets/game/g1.jpg"),
+    id: "512710",
+    name: "CALLOFDUTY",
+    fullName: "Call of Duty: Warzone",
+    imageUrl: require("../assets/game/callofduty.jpg"),
   },
   {
-    id: "g2",
-    game: "DOTA2",
-    imageUrl: require("../assets/game/g2.jpg"),
+    id: "29595",
+    name: "DOTA2",
+    fullName: "Dota 2",
+    imageUrl: require("../assets/game/dota2.jpg"),
   },
   {
-    id: "g3",
-    game: "LOL",
-    imageUrl: require("../assets/game/g3.jpg"),
+    id: "27471",
+    name: "MINECRAFT",
+    fullName: "Minecraft",
+    imageUrl: require("../assets/game/minecraft.jpg"),
   },
   {
-    id: "g4",
-    game: "VALORANT",
-    imageUrl: require("../assets/game/g4.jpg"),
+    id: "33214",
+    name: "FORTNITE",
+    fullName: "Fortnite",
+    imageUrl: require("../assets/game/fortnite.jpg"),
   },
   {
-    id: "g5",
-    game: "FORTNITE",
-    imageUrl: require("../assets/game/g5.jpg"),
+    id: "511224",
+    name: "APEXLEGENDS",
+    fullName: "Apex Legends",
+    imageUrl: require("../assets/game/apexlegends.jpg"),
   },
   {
-    id: "g6",
-    game: "MINECRAFT",
-    imageUrl: require("../assets/game/g6.jpg"),
+    id: "21779",
+    name: "LOL",
+    fullName: "League of Legends",
+    imageUrl: require("../assets/game/lol.jpg"),
   },
   {
-    id: "g7",
-    game: "CALLOFDUTY",
-    imageUrl: require("../assets/game/g7.jpg"),
+    id: "515025",
+    name: "OVERWATCH",
+    fullName: "Overwatch 2",
+    imageUrl: require("../assets/game/overwatch.jpg"),
   },
   {
-    id: "g8",
-    game: "PUBG",
-    imageUrl: require("../assets/game/g8.jpg"),
+    id: "32982",
+    name: "GTAV",
+    fullName: "Grand Theft Auto V",
+    imageUrl: require("../assets/game/gtav.jpg"),
   },
   {
-    id: "g9",
-    game: "ROBLOX",
-    imageUrl: require("../assets/game/g9.jpg"),
+    id: "516575",
+    name: "VALORANT",
+    fullName: "VALORANT",
+    imageUrl: require("../assets/game/valorant.jpg"),
+  },
+  {
+    id: "490100",
+    name: "LOSTARK",
+    fullName: "Lost Ark",
+    imageUrl: require("../assets/game/lostark.jpg"),
   },
 ];
 
 const StreamingScreen = () => {
+  const [selected, setSelected] = useState("512710");
+
   return (
     <SafeAreaView style={tw`flex flex-1 bg-black`}>
       <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
@@ -105,7 +122,9 @@ const StreamingScreen = () => {
 
       <View style={tw`py-4 px-2`}>
         <View style={tw`pb-4`}>
-          <Text style={tw`text-white text-lg font-semibold`}>Watch Live</Text>
+          <Text style={tw`text-white text-lg font-semibold`}>
+            라이브 시청하기
+          </Text>
         </View>
         <View
           style={tw`flex flex-row bg-transparent border border-[#8758FF] items-center px-2 h-12 rounded-lg`}
@@ -125,15 +144,19 @@ const StreamingScreen = () => {
           keyExtractor={(item) => item.id}
           horizontal
           showsHorizontalScrollIndicator={false}
-          data={livestream}
+          data={categories}
           renderItem={({ item }) => (
-            <TouchableOpacity style={tw`relative w-70 h-44 mx-2`}>
-              <Image source={item.imageUrl} style={tw`w-70 h-44 rounded-lg`} />
-              <View
-                style={tw`absolute top-3 left-2 bg-red-500 border border-red-500 px-2 py-1 rounded-lg`}
-              >
-                <Text style={tw`text-white`}>LIVE</Text>
-              </View>
+            <TouchableOpacity
+              onPress={() => {
+                setSelected(item.id);
+              }}
+              style={tw`flex items-center justify-center px-4 py-2 bg-[#181818] rounded-xl mx-1 ${
+                selected === item.id ? "bg-[#8758FF]" : ""
+              }`}
+            >
+              <Text style={tw`text-gray-200 font-semibold text-sm`}>
+                {item.fullName}
+              </Text>
             </TouchableOpacity>
           )}
         />
@@ -144,13 +167,15 @@ const StreamingScreen = () => {
           keyExtractor={(item) => item.id}
           horizontal
           showsHorizontalScrollIndicator={false}
-          data={games}
+          data={livestream}
           renderItem={({ item }) => (
-            <TouchableOpacity style={tw`mx-1`}>
-              <Image
-                source={item.imageUrl}
-                style={tw`w-16 h-16 rounded-full bg-[#0d0d0d]`}
-              />
+            <TouchableOpacity style={tw`relative w-70 h-44 mx-2`}>
+              <Image source={item.imageUrl} style={tw`w-70 h-44 rounded-lg`} />
+              <View
+                style={tw`absolute top-3 left-2 bg-red-500 border border-red-500 px-2 py-1 rounded-lg`}
+              >
+                <Text style={tw`text-white`}>LIVE</Text>
+              </View>
             </TouchableOpacity>
           )}
         />
