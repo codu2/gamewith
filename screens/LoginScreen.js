@@ -20,7 +20,7 @@ const LoginScreen = () => {
         source={require("../assets/game/user.jpg")}
         style={tw`w-full h-90`}
       />
-      <View style={tw`flex items-center`}>
+      <View style={tw`flex flex-1 items-center`}>
         <View style={tw`flex flex-row items-center w-full justify-evenly py-6`}>
           <TouchableOpacity onPress={() => setSelected("login")}>
             <Text
@@ -42,7 +42,9 @@ const LoginScreen = () => {
           </TouchableOpacity>
         </View>
 
-        <ScrollView contentContainerStyle={tw`w-full flex items-center mt-6`}>
+        <ScrollView
+          contentContainerStyle={tw`w-full flex items-center mt-6 pb-28`}
+        >
           <View>
             <Text style={tw`text-base font-semibold text-gray-300`}>
               아이디
@@ -109,7 +111,9 @@ const LoginScreen = () => {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate("navigation")}>
-            <Text style={tw`text-[#8758FF] text-sm`}>비회원으로 이용하기</Text>
+            <Text style={tw`text-[#8758FF] text-sm py-2`}>
+              비회원으로 이용하기
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
