@@ -6,32 +6,17 @@ import {
   Image,
   TextInput,
   FlatList,
+  ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import tw from "twrnc";
 import {
   ChevronLeftIcon,
   MagnifyingGlassIcon,
+  EyeIcon,
 } from "react-native-heroicons/outline";
-
-const livestream = [
-  {
-    id: "l1",
-    imageUrl: require("../assets/game/l1.jpg"),
-  },
-  {
-    id: "l2",
-    imageUrl: require("../assets/game/l2.jpg"),
-  },
-  {
-    id: "l3",
-    imageUrl: require("../assets/game/l3.jpg"),
-  },
-  {
-    id: "l4",
-    imageUrl: require("../assets/game/l4.jpg"),
-  },
-];
+import { CLIENT_ID, TOKEN } from "@env";
+import { useNavigation } from "@react-navigation/native";
 
 const categories = [
   {
@@ -97,12 +82,67 @@ const categories = [
 ];
 
 const StreamingScreen = () => {
+  const navigation = useNavigation();
+  const [query, setQuery] = useState("");
+  const [searchGames, setSearchGames] = useState([]);
+  const [searchStreamers, setSearchStreamers] = useState([]);
   const [selected, setSelected] = useState("512710");
+  const [stream, setStream] = useState([]);
+
+  useEffect(() => {
+    const getData = async () => {
+      const getStream = await fetch(
+        `https://api.twitch.tv/helix/streams?first=5&game_id=${selected}`,
+        {
+          method: "GET",
+          headers: {
+            "Client-Id": CLIENT_ID,
+            Authorization: `Bearer ${TOKEN}`,
+          },
+        }
+      );
+      const stream = await getStream.json();
+      setStream(stream.data);
+    };
+    getData();
+  }, [stream]);
+
+  const onSubmit = async () => {
+    if (query) {
+      const searchGames = await fetch(
+        `https://api.twitch.tv/helix/search/categories?query=${query}`,
+        {
+          method: "GET",
+          headers: {
+            "Client-Id": CLIENT_ID,
+            Authorization: `Bearer ${TOKEN}`,
+          },
+        }
+      );
+      const games = await searchGames.json();
+      setSearchGames(games.data);
+
+      const searchStreamers = await fetch(
+        `https://api.twitch.tv/helix/search/channels?query=${query}`,
+        {
+          method: "GET",
+          headers: {
+            "Client-Id": CLIENT_ID,
+            Authorization: `Bearer ${TOKEN}`,
+          },
+        }
+      );
+      const streamers = await searchStreamers.json();
+      setSearchStreamers(streamers);
+
+      setQuery("");
+    }
+  };
 
   return (
     <SafeAreaView style={tw`flex flex-1 bg-black`}>
       <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <ChevronLeftIcon color="#f4f4f4" size={24} />
         </TouchableOpacity>
         <TouchableOpacity>
@@ -135,6 +175,11 @@ const StreamingScreen = () => {
             placeholder="Search live channels or streamers"
             autoComplete="false"
             placeholderTextColor={"#ccc"}
+            value={query}
+            onChangeText={(text) => {
+              setQuery(text);
+            }}
+            onSubmitEditing={onSubmit}
           />
         </View>
       </View>
@@ -162,24 +207,40 @@ const StreamingScreen = () => {
         />
       </View>
 
-      <View style={tw`py-4 px-2`}>
+      <ScrollView style={tw`flex flex-1 py-4 px-2 mt-2 mb-18 bg-[#0d0d0d]`}>
         <FlatList
           keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={livestream}
+          showsVerticalScrollIndicator={false}
+          data={stream}
           renderItem={({ item }) => (
-            <TouchableOpacity style={tw`relative w-70 h-44 mx-2`}>
-              <Image source={item.imageUrl} style={tw`w-70 h-44 rounded-lg`} />
-              <View
-                style={tw`absolute top-3 left-2 bg-red-500 border border-red-500 px-2 py-1 rounded-lg`}
-              >
-                <Text style={tw`text-white`}>LIVE</Text>
+            <TouchableOpacity style={tw`relative w-80 h-48 mx-auto my-2`}>
+              <Image
+                source={{
+                  uri: item.thumbnail_url
+                    ?.replace("{width}", 320)
+                    .replace("{height}", 192),
+                }}
+                style={tw`w-80 h-48 rounded-lg`}
+              />
+              <View style={tw`absolute top-3 left-2 flex flex-row`}>
+                <View
+                  style={tw`bg-red-500 border border-red-500 px-2 py-1 rounded-lg`}
+                >
+                  <Text style={tw`text-white`}>LIVE</Text>
+                </View>
+                <View
+                  style={tw`flex flex-row bg-gray-500 border border-gray-500 px-2 py-1 rounded-lg ml-2`}
+                >
+                  <EyeIcon color="#fff" size={16} style={tw`text-slate-200`} />
+                  <Text style={tw`text-slate-200 ml-1`}>
+                    {(item.viewer_count / 1000).toFixed(2)}k
+                  </Text>
+                </View>
               </View>
             </TouchableOpacity>
           )}
         />
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
