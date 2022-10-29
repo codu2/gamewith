@@ -16,6 +16,7 @@ import {
   EllipsisHorizontalIcon,
 } from "react-native-heroicons/outline";
 import { CLIENT_ID, TOKEN } from "@env";
+import { useNavigation } from "@react-navigation/native";
 
 const streamers = [
   {
@@ -81,6 +82,7 @@ const streamers = [
 ];
 
 const DiscoverScreen = () => {
+  const navigation = useNavigation();
   const [trendingGame, setTrendingGame] = useState([]);
   const [query, setQuery] = useState("");
   const [searchGames, setSearchGames] = useState([]);
@@ -134,14 +136,16 @@ const DiscoverScreen = () => {
         }
       );
       const streamers = await searchStreamers.json();
-      setSearchStreamers(streamers);
+      setSearchStreamers(streamers.data);
+
+      setQuery("");
     }
   };
 
   return (
     <SafeAreaView style={tw`flex flex-1 bg-black`}>
       <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <ChevronLeftIcon color="#f4f4f4" size={24} />
         </TouchableOpacity>
         <TouchableOpacity>

@@ -14,7 +14,9 @@ import {
   EllipsisHorizontalIcon,
   EyeIcon,
 } from "react-native-heroicons/solid";
-import { CLIENT_ID, CLIENT_SECRET, TOKEN, USER_ID } from "@env";
+import { CLIENT_ID, CLIENT_SECRET, TOKEN, USER_ID, SCOPE } from "@env";
+import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
 const following = [
   {
@@ -101,18 +103,19 @@ const categories = [
 ];
 
 const HomeScreen = () => {
+  const navigation = useNavigation();
   const [live, setLive] = useState([]);
   const [soundtrack, setSoundtrack] = useState([]);
 
   useEffect(() => {
     /*
-    const getToken = async () => {
+    const getAppToken = async () => {
       const res = await axios.post(
         `https://id.twitch.tv/oauth2/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&grant_type=client_credentials`
       );
       const data = await res.data;
     };
-    getToken();
+    getAppToken();
     */
     const getData = async () => {
       const getLive = await fetch(
@@ -141,18 +144,13 @@ const HomeScreen = () => {
       const soundtrack = await getSoundtrack.json();
       setSoundtrack(soundtrack.data);
 
-      const getData = await fetch(
-        `https://api.twitch.tv/helix/streams/followed?user_id=${USER_ID}`,
-        {
-          method: "GET",
-          headers: {
-            "Client-Id": CLIENT_ID,
-            Authorization: `Bearer ${TOKEN}`,
-          },
-        }
+      /*
+      const getUserToken = await axios.get(
+        `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=http://localhost:3000&scope=user%3Aread%3Afollows`
       );
-      const data = await getData.json();
+      const data = await getUserToken.data;
       console.log(data);
+      */
     };
     getData();
   }, []);
@@ -197,6 +195,7 @@ const HomeScreen = () => {
             data={following}
             renderItem={({ item }) => (
               <TouchableOpacity
+                key={item.id}
                 style={tw`h-14 w-14 mx-2 rounded-full flex items-center justify-center bg-[#8758FF]`}
               >
                 <Image
@@ -221,7 +220,11 @@ const HomeScreen = () => {
             showsHorizontalScrollIndicator={false}
             data={categories}
             renderItem={({ item }) => (
-              <TouchableOpacity style={tw`relative h-44 w-36 mx-2`}>
+              <TouchableOpacity
+                key={item.id}
+                style={tw`relative h-44 w-36 mx-2`}
+                onPress={() => navigation.navigate("category", item)}
+              >
                 <Image
                   source={item.imageUrl}
                   style={tw`w-36 h-44 rounded-xl opacity-70`}
@@ -251,7 +254,10 @@ const HomeScreen = () => {
             showsHorizontalScrollIndicator={false}
             data={live}
             renderItem={({ item }) => (
-              <TouchableOpacity style={tw`relative w-72 h-44 mx-2`}>
+              <TouchableOpacity
+                key={item.id}
+                style={tw`relative w-72 h-44 mx-2`}
+              >
                 <Image
                   source={{
                     uri: item.thumbnail_url
@@ -299,7 +305,7 @@ const HomeScreen = () => {
             showsHorizontalScrollIndicator={false}
             data={soundtrack}
             renderItem={({ item }) => (
-              <TouchableOpacity style={tw`w-40 h-40 mx-2`}>
+              <TouchableOpacity key={item.id} style={tw`w-40 h-40 mx-2`}>
                 <Image
                   source={{
                     uri: item.image_url
