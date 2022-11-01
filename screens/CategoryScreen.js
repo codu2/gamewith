@@ -16,8 +16,9 @@ import { CLIENT_ID, TOKEN } from "@env";
 const CategoryScreen = ({ route }) => {
   const navigation = useNavigation();
   const [game, setGame] = useState({});
+  const [selected, setSelected] = useState("live");
   const [streams, setStreams] = useState([]);
-  const [video, setVideo] = useState([]);
+  const [clips, setClips] = useState([]);
 
   useEffect(() => {
     const getData = async () => {
@@ -47,8 +48,8 @@ const CategoryScreen = ({ route }) => {
       const streams = await getStreams.json();
       setStreams(streams.data);
 
-      const getVideo = await fetch(
-        `https://api.twitch.tv/helix/videos?game_id=${route.params.id}`,
+      const getClips = await fetch(
+        `https://api.twitch.tv/helix/clips?game_id=${route.params.id}`,
         {
           method: "GET",
           headers: {
@@ -57,8 +58,8 @@ const CategoryScreen = ({ route }) => {
           },
         }
       );
-      const video = await getVideo.json();
-      console.log(video);
+      const clips = await getClips.json();
+      setClips(clips.data);
     };
     if (route.params.id) {
       getData();
@@ -69,10 +70,14 @@ const CategoryScreen = ({ route }) => {
     <View style={tw`flex flex-1 bg-black`}>
       {game ? (
         <>
-          <View style={tw`relative w-full h-72`}>
+          <View style={tw`relative w-full h-96`}>
             <Image
-              source={require("../assets/game/dota2.jpg")}
-              style={tw`w-full h-72 opacity-70`}
+              source={{
+                uri: game.box_art_url
+                  ?.replace("{width}", 384)
+                  .replace("{height}", 384),
+              }}
+              style={tw`w-full h-96 opacity-70`}
             />
             <View
               style={tw`absolute top-14 w-full flex flex-row items-center justify-between px-4 pb-2`}
@@ -87,26 +92,45 @@ const CategoryScreen = ({ route }) => {
           </View>
           <View>
             <View
-              style={tw`w-full py-2 px-4 flex flex-row items-center justify-between`}
+              style={tw`w-full py-3 px-2 flex flex-row items-center justify-between`}
             >
-              <Text style={tw`text-white font-bold text-3xl`}>
+              <Text style={tw`flex-3 text-white font-bold text-3xl`}>
                 {game?.name?.toUpperCase()}
               </Text>
               <TouchableOpacity
-                style={tw`w-28 bg-[#8758FF] flex items-center justify-center py-3 px-4 rounded-xl`}
+                style={tw`flex-1 w-28 bg-[#8758FF] flex items-center justify-center py-3 px-4 rounded-lg ml-1`}
               >
                 <Text style={tw`text-white font-semibold`}>Following</Text>
               </TouchableOpacity>
             </View>
           </View>
-          <ScrollView style={tw`flex flex-1 py-4 px-2 mt-2 mb-18 bg-[#0d0d0d]`}>
-            <View style={tw`py-2`}>
-              <Text style={tw`text-white font-semibold text-xl`}>라이브</Text>
-            </View>
+          <View
+            style={tw`py-2 flex flex-row items-center justify-evenly py-4 px-2 mt-2`}
+          >
+            <TouchableOpacity onPress={() => setSelected("live")}>
+              <Text
+                style={tw`${
+                  selected === "live" ? "text-[#8756FF]" : "text-gray-300"
+                } font-semibold text-lg mx-1`}
+              >
+                라이브
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setSelected("clip")}>
+              <Text
+                style={tw`${
+                  selected === "clip" ? "text-[#8756FF]" : "text-gray-300"
+                } font-semibold text-lg mx-1`}
+              >
+                클립
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={tw`flex flex-1 py-4 px-2 mt-1 mb-18 bg-[#0d0d0d]`}>
             <FlatList
               keyExtractor={(item) => item.id}
               showsVerticalScrollIndicator={false}
-              data={streams}
+              data={selected === "live" ? streams : clips}
               renderItem={({ item }) => (
                 <TouchableOpacity style={tw`flex flex-row w-full items-center`}>
                   <View style={tw`relative w-48 h-32 my-2 mr-3`}>
@@ -118,13 +142,15 @@ const CategoryScreen = ({ route }) => {
                       }}
                       style={tw`w-48 h-32 rounded-lg`}
                     />
-                    <View style={tw`absolute top-3 left-2`}>
-                      <View
-                        style={tw`bg-red-500 border border-red-500 px-2 py-1 rounded-lg`}
-                      >
-                        <Text style={tw`text-white`}>LIVE</Text>
+                    {selected === "live" && (
+                      <View style={tw`absolute top-3 left-2`}>
+                        <View
+                          style={tw`bg-red-500 border border-red-500 px-2 py-1 rounded-lg`}
+                        >
+                          <Text style={tw`text-white`}>LIVE</Text>
+                        </View>
                       </View>
-                    </View>
+                    )}
                   </View>
                   <View style={tw`h-32 py-2 flex w-40`}>
                     <Text
@@ -142,8 +168,12 @@ const CategoryScreen = ({ route }) => {
                         {(item.viewer_count / 1000).toFixed(2)}k Viewers
                       </Text>
                     </View>
-                    <Text style={tw`text-white font-base`}>
-                      {item.user_name}
+                    <Text
+                      style={tw`text-white text-sm bg-[#181818] py-1 px-1 text-center`}
+                    >
+                      {selected === "live"
+                        ? item.user_name
+                        : item.broadcaster_name}
                     </Text>
                   </View>
                 </TouchableOpacity>
