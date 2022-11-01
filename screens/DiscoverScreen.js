@@ -139,6 +139,11 @@ const DiscoverScreen = () => {
       setSearchStreamers(streamers.data);
 
       setQuery("");
+      navigation.navigate("searchResult", {
+        query: query,
+        games: games.data,
+        streamers: streamers.data,
+      });
     }
   };
 
@@ -201,7 +206,10 @@ const DiscoverScreen = () => {
             showsHorizontalScrollIndicator={false}
             data={trendingGame}
             renderItem={({ item }) => (
-              <TouchableOpacity style={tw`mx-2`}>
+              <TouchableOpacity
+                style={tw`mx-2`}
+                onPress={() => navigation.navigate("category", item)}
+              >
                 <Image
                   source={{
                     uri: item?.box_art_url
@@ -237,13 +245,13 @@ const DiscoverScreen = () => {
                 <View style={tw`flex flex-row items-center`}>
                   <Image
                     source={item.imageUrl}
-                    style={tw`w-12 h-12 rounded-full mr-2`}
+                    style={tw`w-12 h-12 rounded-full mr-4`}
                   />
-                  <View style={tw`h-10 flex justify-between`}>
+                  <View style={tw`min-h-10 flex justify-between`}>
                     <Text style={tw`text-white font-semibold`}>
                       {item.name}
                     </Text>
-                    <View style={tw`flex flex-row items-center`}>
+                    <View style={tw`flex flex-row items-center max-w-48`}>
                       {item.game.map((game) => (
                         <Text
                           key={`${game}${new Date().getTime()}`}
