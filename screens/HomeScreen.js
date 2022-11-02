@@ -14,7 +14,7 @@ import {
   EllipsisHorizontalIcon,
   EyeIcon,
 } from "react-native-heroicons/solid";
-import { CLIENT_ID, CLIENT_SECRET, TOKEN, USER_ID, SCOPE } from "@env";
+import { CLIENT_ID, CLIENT_SECRET, TOKEN, USER_ID, ACCESS_TOKEN } from "@env";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 
@@ -104,6 +104,8 @@ const categories = [
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+  const [user, setUser] = useState({});
+  const [follows, setFollows] = useState([]);
   const [live, setLive] = useState([]);
   const [soundtrack, setSoundtrack] = useState([]);
 
@@ -118,8 +120,46 @@ const HomeScreen = () => {
     getAppToken();
     */
     const getData = async () => {
+      const getUsers = await fetch("https://api.twitch.tv/helix/users", {
+        method: "GET",
+        headers: {
+          "Client-Id": CLIENT_ID,
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+        },
+      });
+      const users = await getUsers.json();
+      const user = users.data[0];
+      const { id } = user;
+      setUser(user);
+
+      const getFollows = await fetch(
+        `https://api.twitch.tv/helix/users/follows?from_id=${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Client-Id": CLIENT_ID,
+            Authorization: `Bearer ${ACCESS_TOKEN}`,
+          },
+        }
+      );
+      const follows = await getFollows.json();
+      const ids = follows.data.map((item) => `id=${item.to_id}`);
+      const parameter = ids.join("&");
+      const getFollowsData = await fetch(
+        `https://api.twitch.tv/helix/users?${parameter}`,
+        {
+          method: "GET",
+          headers: {
+            "Client-Id": CLIENT_ID,
+            Authorization: `Bearer ${ACCESS_TOKEN}`,
+          },
+        }
+      );
+      const followsData = await getFollowsData.json();
+      setFollows(followsData.data);
+
       const getLive = await fetch(
-        `https://api.twitch.tv/helix/streams?first=3`,
+        `https://api.twitch.tv/helix/streams?first=5`,
         {
           method: "GET",
           headers: {
@@ -143,14 +183,6 @@ const HomeScreen = () => {
       );
       const soundtrack = await getSoundtrack.json();
       setSoundtrack(soundtrack.data);
-
-      /*
-      const getUserToken = await axios.get(
-        `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=http://localhost:3000&scope=user%3Aread%3Afollows`
-      );
-      const data = await getUserToken.data;
-      console.log(data);
-      */
     };
     getData();
   }, []);
@@ -167,7 +199,8 @@ const HomeScreen = () => {
           </TouchableOpacity>
           <TouchableOpacity>
             <Image
-              source={require("../assets/game/user.jpg")}
+              //source={require("../assets/game/user.jpg")}
+              source={{ uri: user.profile_image_url }}
               style={{
                 width: 40,
                 height: 40,
@@ -192,15 +225,12 @@ const HomeScreen = () => {
             horizontal
             keyExtractor={(item) => item.id}
             showsHorizontalScrollIndicator={false}
-            data={following}
+            data={follows}
             renderItem={({ item }) => (
-              <TouchableOpacity
-                key={item.id}
-                style={tw`h-14 w-14 mx-2 rounded-full flex items-center justify-center bg-[#8758FF]`}
-              >
+              <TouchableOpacity key={item.id} style={tw`h-14 w-14 mx-2`}>
                 <Image
-                  source={item.imageUrl}
-                  style={tw`h-12 w-12 mx-2 rounded-full`}
+                  source={{ uri: item.profile_image_url }}
+                  style={tw`h-14 w-14 rounded-full`}
                 />
               </TouchableOpacity>
             )}
