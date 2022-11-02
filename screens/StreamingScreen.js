@@ -92,7 +92,7 @@ const StreamingScreen = () => {
   useEffect(() => {
     const getData = async () => {
       const getStream = await fetch(
-        `https://api.twitch.tv/helix/streams?first=5&game_id=${selected}`,
+        `https://api.twitch.tv/helix/streams?first=15&game_id=${selected}`,
         {
           method: "GET",
           headers: {
@@ -136,6 +136,11 @@ const StreamingScreen = () => {
       setSearchStreamers(streamers);
 
       setQuery("");
+      navigation.navigate("searchResult", {
+        query: query,
+        games: games.data,
+        streamers: streamers.data,
+      });
     }
   };
 

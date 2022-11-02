@@ -51,55 +51,73 @@ const SearchResultScreen = ({ route }) => {
           <View style={tw`py-2`}>
             <Text style={tw`text-white font-semibold text-xl`}>게임</Text>
           </View>
-          <FlatList
-            horizontal
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-            data={route.params.games}
-            renderItem={({ item }) => (
-              <TouchableOpacity key={item.id} style={tw`h-56 w-44 mx-2`}>
-                <Image
-                  source={{ uri: item.box_art_url }}
-                  style={tw`w-44 h-56 rounded-xl`}
-                />
-              </TouchableOpacity>
-            )}
-          />
+          {route.params.games.length > 0 ? (
+            <FlatList
+              horizontal
+              keyExtractor={(item) => item.id}
+              showsHorizontalScrollIndicator={false}
+              data={route.params.games}
+              renderItem={({ item }) => (
+                <TouchableOpacity key={item.id} style={tw`h-32 w-24 mx-2`}>
+                  <Image
+                    source={{ uri: item.box_art_url }}
+                    style={tw`w-24 h-32 rounded-lg`}
+                  />
+                </TouchableOpacity>
+              )}
+            />
+          ) : (
+            <View style={tw`w-full my-2`}>
+              <Text style={tw`text-gray-400 text-center`}>
+                검색 결과가 없습니다.
+              </Text>
+            </View>
+          )}
         </View>
 
         <View style={tw`py-4 px-2`}>
           <View style={tw`py-2`}>
             <Text style={tw`text-white font-semibold text-xl`}>스트리머</Text>
           </View>
-          <FlatList
-            style={tw`max-h-96`}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-            data={route.params.streamers}
-            renderItem={({ item }) => (
-              <View
-                style={tw`flex flex-row items-center justify-between w-full h-18 bg-[#181818] rounded-lg px-4 py-2 my-2`}
-              >
-                <View style={tw`flex flex-row items-center`}>
-                  <Image
-                    source={{ uri: item.thumbnail_url }}
-                    style={tw`w-12 h-12 rounded-full mr-4`}
-                  />
-                  <View style={tw`min-h-10 flex justify-between`}>
-                    <Text style={tw`text-white font-semibold`}>
-                      {item.display_name}
-                    </Text>
-                    <Text style={tw`max-w-48 text-[#8758FF] mr-2`}>
-                      {item.game_name}
-                    </Text>
+          {route.params.streamers.length > 0 ? (
+            <FlatList
+              style={tw`max-h-96`}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
+              data={route.params.streamers}
+              renderItem={({ item }) => (
+                <View
+                  style={tw`flex flex-row items-center justify-between w-full h-18 bg-[#181818] rounded-lg px-4 py-2 my-2`}
+                >
+                  <View style={tw`flex flex-row items-center`}>
+                    <Image
+                      source={{ uri: item.thumbnail_url }}
+                      style={tw`w-12 h-12 rounded-full mr-4`}
+                    />
+                    <View style={tw`min-h-10 flex justify-between`}>
+                      <Text style={tw`text-white font-semibold`}>
+                        {item.display_name}
+                      </Text>
+                      <Text style={tw`max-w-48 text-[#8758FF] mr-2`}>
+                        {item.game_name}
+                      </Text>
+                    </View>
                   </View>
+                  <TouchableOpacity
+                    style={tw`border border-[#8758FF] px-2 py-1`}
+                  >
+                    <Text style={tw`text-[#8758FF]`}>Watch</Text>
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={tw`border border-[#8758FF] px-2 py-1`}>
-                  <Text style={tw`text-[#8758FF]`}>Watch</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          />
+              )}
+            />
+          ) : (
+            <View style={tw`w-full my-2`}>
+              <Text style={tw`text-gray-400 text-center`}>
+                검색 결과가 없습니다.
+              </Text>
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
