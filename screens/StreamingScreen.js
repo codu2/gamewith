@@ -17,6 +17,8 @@ import {
 } from "react-native-heroicons/outline";
 import { CLIENT_ID, TOKEN } from "@env";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { selectUser } from "../slices/userSlice";
 
 const categories = [
   {
@@ -83,6 +85,7 @@ const categories = [
 
 const StreamingScreen = () => {
   const navigation = useNavigation();
+  const user = useSelector(selectUser);
   const [query, setQuery] = useState("");
   const [searchGames, setSearchGames] = useState([]);
   const [searchStreamers, setSearchStreamers] = useState([]);
@@ -150,9 +153,13 @@ const StreamingScreen = () => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <ChevronLeftIcon color="#f4f4f4" size={24} />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("user")}>
           <Image
-            source={require("../assets/game/user.jpg")}
+            source={
+              user
+                ? { uri: user.profile_image_url }
+                : require("../assets/game/non-member.jpg")
+            }
             style={{
               width: 40,
               height: 40,
