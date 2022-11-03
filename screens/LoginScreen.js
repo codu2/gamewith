@@ -11,10 +11,13 @@ import tw from "twrnc";
 import { useNavigation } from "@react-navigation/native";
 import { CLIENT_ID, CLIENT_SECRET } from "@env";
 import * as AuthSession from "expo-auth-session";
+import { signInUser, setFollows, setAccessToken } from "../slices/userSlice";
+import { useDispatch } from "react-redux";
 
 const LoginScreen = () => {
   const [selected, setSelected] = useState("login");
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const signInWithTwitch = async () => {
     const redirect_url = AuthSession.getRedirectUrl();
@@ -31,7 +34,47 @@ const LoginScreen = () => {
         }
       );
       const data = await getUserToken.json();
-      console.log(data);
+      const { access_token } = data;
+      dispatch(setAccessToken(access_token));
+
+      const getUsers = await fetch("https://api.twitch.tv/helix/users", {
+        method: "GET",
+        headers: {
+          "Client-Id": CLIENT_ID,
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+      const users = await getUsers.json();
+      const user = users.data[0];
+      const { id } = user;
+      dispatch(signInUser(user));
+
+      const getFollows = await fetch(
+        `https://api.twitch.tv/helix/users/follows?from_id=${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Client-Id": CLIENT_ID,
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+      const follows = await getFollows.json();
+      const ids = follows.data.map((item) => `id=${item.to_id}`);
+      const parameter = ids.join("&");
+      const getFollowsData = await fetch(
+        `https://api.twitch.tv/helix/users?${parameter}`,
+        {
+          method: "GET",
+          headers: {
+            "Client-Id": CLIENT_ID,
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+      const followsData = await getFollowsData.json();
+      dispatch(setFollows(followsData.data));
+      navigation.navigate("navigation");
     }
   };
 
