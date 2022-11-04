@@ -15,8 +15,10 @@ import {
   MagnifyingGlassIcon,
   EllipsisHorizontalIcon,
 } from "react-native-heroicons/outline";
-import { CLIENT_ID, TOKEN } from "@env";
+import { CLIENT_ID, TOKEN, ACCESS_TOKEN } from "@env";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { selectUser } from "../slices/userSlice";
 
 const streamers = [
   {
@@ -83,22 +85,26 @@ const streamers = [
 
 const DiscoverScreen = () => {
   const navigation = useNavigation();
+  const user = useSelector(selectUser);
   const [trendingGame, setTrendingGame] = useState([]);
   const [query, setQuery] = useState("");
   const [searchGames, setSearchGames] = useState([]);
   const [searchStreamers, setSearchStreamers] = useState([]);
 
   useEffect(() => {
-    const getTrendingGame = async () => {
-      const res = await fetch("https://api.twitch.tv/helix/games/top", {
-        method: "GET",
-        headers: {
-          "Client-Id": CLIENT_ID,
-          Authorization: `Bearer ${TOKEN}`,
-        },
-      });
-      const data = await res.json();
-      const filteredGames = await data.data.filter(
+    const getData = async () => {
+      const getTrendingGame = await fetch(
+        "https://api.twitch.tv/helix/games/top",
+        {
+          method: "GET",
+          headers: {
+            "Client-Id": CLIENT_ID,
+            Authorization: `Bearer ${TOKEN}`,
+          },
+        }
+      );
+      const treandingGame = await getTrendingGame.json();
+      const filteredGames = await treandingGame.data.filter(
         (item) =>
           item.id !== "509658" &&
           item.id !== "518203" &&
@@ -106,8 +112,21 @@ const DiscoverScreen = () => {
           item.id !== "26936"
       );
       setTrendingGame(filteredGames);
+
+      const getTopStreamers = await fetch(
+        "https://api.twitch.tv/helix/bits/leaderboard?started_at=2021-01-29T00:00:00Z&period=week",
+        {
+          method: "GET",
+          headers: {
+            "Client-Id": CLIENT_ID,
+            Authorization: `Bearer ${ACCESS_TOKEN}`,
+          },
+        }
+      );
+      const topStreamers = await getTopStreamers.json();
+      console.log(topStreamers);
     };
-    getTrendingGame();
+    getData();
   }, []);
 
   const onSubmit = async () => {
@@ -153,9 +172,13 @@ const DiscoverScreen = () => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <ChevronLeftIcon color="#f4f4f4" size={24} />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("user")}>
           <Image
-            source={require("../assets/game/user.jpg")}
+            source={
+              user
+                ? { uri: user.profile_image_url }
+                : require("../assets/game/non-member.jpg")
+            }
             style={{
               width: 40,
               height: 40,
