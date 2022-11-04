@@ -101,13 +101,21 @@ const SearchResultScreen = ({ route }) => {
                       source={{ uri: item.thumbnail_url }}
                       style={tw`w-12 h-12 rounded-full mr-4`}
                     />
-                    <View style={tw`min-h-10 flex justify-between`}>
-                      <Text style={tw`text-white font-semibold`}>
+                    <View style={tw`min-h-10 flex justify-center`}>
+                      <Text
+                        numberOfLines={1}
+                        style={tw`text-white font-semibold`}
+                      >
                         {item.display_name}
                       </Text>
-                      <Text style={tw`max-w-48 text-[#8758FF] mr-2`}>
-                        {item.game_name}
-                      </Text>
+                      {item.game_name && (
+                        <Text
+                          numberOfLines={2}
+                          style={tw`max-w-48 text-[#8758FF] mr-2 mt-1`}
+                        >
+                          {item.game_name}
+                        </Text>
+                      )}
                     </View>
                   </View>
                   <TouchableOpacity

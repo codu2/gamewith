@@ -118,6 +118,7 @@ const CategoryScreen = ({ route }) => {
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setSelected("clip")}>
               <Text
+                numberOfLines={1}
                 style={tw`${
                   selected === "clip" ? "text-[#8756FF]" : "text-gray-300"
                 } font-semibold text-lg mx-1`}
@@ -152,22 +153,25 @@ const CategoryScreen = ({ route }) => {
                       </View>
                     )}
                   </View>
-                  <View style={tw`h-32 py-2 flex w-40`}>
+                  <View style={tw`h-32 py-2 flex w-40 justify-between`}>
                     <Text
-                      style={tw`text-white text-base font-semibold whitespace-nowrap h-6 overflow-hidden`}
+                      numberOfLines={1}
+                      style={tw`text-white text-base font-semibold h-6 overflow-hidden`}
                     >
                       {item.title}
                     </Text>
-                    <View style={tw`flex flex-row pt-4 pb-6`}>
-                      <EyeIcon
-                        color="#fff"
-                        size={16}
-                        style={tw`text-gray-200`}
-                      />
-                      <Text style={tw`text-gray-200 ml-1`}>
-                        {(item.viewer_count / 1000).toFixed(2)}k Viewers
-                      </Text>
-                    </View>
+                    {selected === "live" && (
+                      <View style={tw`flex flex-row pt-4 pb-6`}>
+                        <EyeIcon
+                          color="#fff"
+                          size={16}
+                          style={tw`text-gray-200`}
+                        />
+                        <Text style={tw`text-gray-200 ml-1`}>
+                          {(item.viewer_count / 1000).toFixed(2)}k Viewers
+                        </Text>
+                      </View>
+                    )}
                     <Text
                       style={tw`text-white text-sm bg-[#181818] py-1 px-1 text-center`}
                     >
