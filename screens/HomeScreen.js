@@ -17,27 +17,8 @@ import {
 import { CLIENT_ID, CLIENT_SECRET, TOKEN, USER_ID, ACCESS_TOKEN } from "@env";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
-
-const following = [
-  {
-    id: "f1",
-    name: "Ninja",
-    game: ["Fortnite"],
-    imageUrl: require("../assets/game/s8.jpeg"),
-  },
-  {
-    id: "f2",
-    name: "Pewdiepie",
-    game: ["Minecraft", "Call of Duty"],
-    imageUrl: require("../assets/game/s1.jpeg"),
-  },
-  {
-    id: "f3",
-    name: "Markiplier",
-    game: ["Indie", "Horror"],
-    imageUrl: require("../assets/game/s6.jpeg"),
-  },
-];
+import { selectUser, selectFollows } from "../slices/userSlice";
+import { useSelector } from "react-redux";
 
 const categories = [
   {
@@ -104,8 +85,8 @@ const categories = [
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const [user, setUser] = useState({});
-  const [follows, setFollows] = useState([]);
+  const user = useSelector(selectUser);
+  const follows = useSelector(selectFollows);
   const [live, setLive] = useState([]);
   const [soundtrack, setSoundtrack] = useState([]);
 
@@ -120,44 +101,6 @@ const HomeScreen = () => {
     getAppToken();
     */
     const getData = async () => {
-      const getUsers = await fetch("https://api.twitch.tv/helix/users", {
-        method: "GET",
-        headers: {
-          "Client-Id": CLIENT_ID,
-          Authorization: `Bearer ${ACCESS_TOKEN}`,
-        },
-      });
-      const users = await getUsers.json();
-      const user = users.data[0];
-      const { id } = user;
-      setUser(user);
-
-      const getFollows = await fetch(
-        `https://api.twitch.tv/helix/users/follows?from_id=${id}`,
-        {
-          method: "GET",
-          headers: {
-            "Client-Id": CLIENT_ID,
-            Authorization: `Bearer ${ACCESS_TOKEN}`,
-          },
-        }
-      );
-      const follows = await getFollows.json();
-      const ids = follows.data.map((item) => `id=${item.to_id}`);
-      const parameter = ids.join("&");
-      const getFollowsData = await fetch(
-        `https://api.twitch.tv/helix/users?${parameter}`,
-        {
-          method: "GET",
-          headers: {
-            "Client-Id": CLIENT_ID,
-            Authorization: `Bearer ${ACCESS_TOKEN}`,
-          },
-        }
-      );
-      const followsData = await getFollowsData.json();
-      setFollows(followsData.data);
-
       const getLive = await fetch(
         `https://api.twitch.tv/helix/streams?first=5`,
         {
@@ -197,10 +140,13 @@ const HomeScreen = () => {
           <TouchableOpacity>
             <BellIcon color="#f4f4f4" size={24} />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("user")}>
             <Image
-              //source={require("../assets/game/user.jpg")}
-              source={{ uri: user.profile_image_url }}
+              source={
+                user
+                  ? { uri: user.profile_image_url }
+                  : require("../assets/game/non-member.jpg")
+              }
               style={{
                 width: 40,
                 height: 40,
@@ -227,7 +173,10 @@ const HomeScreen = () => {
             showsHorizontalScrollIndicator={false}
             data={follows}
             renderItem={({ item }) => (
-              <TouchableOpacity key={item.id} style={tw`h-14 w-14 mx-2`}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("streamer", item)}
+                style={tw`h-14 w-14 mx-2`}
+              >
                 <Image
                   source={{ uri: item.profile_image_url }}
                   style={tw`h-14 w-14 rounded-full`}
@@ -251,7 +200,6 @@ const HomeScreen = () => {
             data={categories}
             renderItem={({ item }) => (
               <TouchableOpacity
-                key={item.id}
                 style={tw`relative h-44 w-36 mx-2`}
                 onPress={() => navigation.navigate("category", item)}
               >
@@ -284,10 +232,7 @@ const HomeScreen = () => {
             showsHorizontalScrollIndicator={false}
             data={live}
             renderItem={({ item }) => (
-              <TouchableOpacity
-                key={item.id}
-                style={tw`relative w-72 h-44 mx-2`}
-              >
+              <TouchableOpacity style={tw`relative w-72 h-44 mx-2`}>
                 <Image
                   source={{
                     uri: item.thumbnail_url
