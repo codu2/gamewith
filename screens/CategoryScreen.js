@@ -69,7 +69,7 @@ const CategoryScreen = ({ route }) => {
   return (
     <View style={tw`flex flex-1 bg-black`}>
       {game ? (
-        <>
+        <ScrollView showsVerticalScrollIndicator={false}>
           <View style={tw`relative w-full h-96`}>
             <Image
               source={{
@@ -127,7 +127,7 @@ const CategoryScreen = ({ route }) => {
               </Text>
             </TouchableOpacity>
           </View>
-          <ScrollView style={tw`flex flex-1 py-4 px-2 mt-1 mb-18 bg-[#0d0d0d]`}>
+          <View style={tw`flex flex-1 py-4 px-2 mt-1 mb-18 bg-[#0d0d0d]`}>
             <FlatList
               keyExtractor={(item) => item.id}
               showsVerticalScrollIndicator={false}
@@ -183,8 +183,8 @@ const CategoryScreen = ({ route }) => {
                 </TouchableOpacity>
               )}
             />
-          </ScrollView>
-        </>
+          </View>
+        </ScrollView>
       ) : (
         <View style={tw`w-full h-full flex items-center justify-center`}>
           <Text style={tw`text-gray-300 font-semibold text-lg`}>

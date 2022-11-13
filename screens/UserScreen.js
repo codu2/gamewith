@@ -40,19 +40,19 @@ const UserScreen = () => {
         <View style={tw`flex flex-row mt-8 w-full justify-center`}>
           <View>
             <Text
-              style={tw`text-white font-semibold text-base h-8 w-28 py-1 px-2`}
+              style={tw`text-white font-semibold text-base h-8 w-20 py-1 px-2`}
             >
-              name
+              닉네임
             </Text>
             <Text
-              style={tw`text-white font-semibold text-base h-8 w-28 py-1 px-2`}
+              style={tw`text-white font-semibold text-base h-8 w-20 py-1 px-2`}
             >
-              email
+              이메일
             </Text>
             <Text
-              style={tw`text-white font-semibold text-base h-8 w-28 py-1 px-2`}
+              style={tw`text-white font-semibold text-base h-8 w-20 py-1 px-2`}
             >
-              created_at
+              가입일
             </Text>
           </View>
           <View>
@@ -70,8 +70,8 @@ const UserScreen = () => {
       </View>
 
       <View style={tw`py-4 px-2`}>
-        <View style={tw`my-1`}>
-          <Text style={tw`text-white text-lg`}>팔로잉</Text>
+        <View style={tw`my-2`}>
+          <Text style={tw`text-white text-lg font-semibold`}>팔로잉</Text>
         </View>
         <FlatList
           keyExtractor={(item) => item.id}
