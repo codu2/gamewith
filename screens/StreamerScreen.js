@@ -118,19 +118,21 @@ const StreamerScreen = ({ route }) => {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <ChevronLeftIcon color="#f4f4f4" size={24} />
           </TouchableOpacity>
-          <TouchableOpacity>
-            <Image
-              source={{ uri: user.profile_image_url }}
-              style={{
-                width: 40,
-                height: 40,
-                resizeMode: "cover",
-                borderRadius: 20,
-                cursor: "pointer",
-                marginLeft: 16,
-              }}
-            />
-          </TouchableOpacity>
+          {user?.id && (
+            <TouchableOpacity>
+              <Image
+                source={{ uri: user.profile_image_url }}
+                style={{
+                  width: 40,
+                  height: 40,
+                  resizeMode: "cover",
+                  borderRadius: 20,
+                  cursor: "pointer",
+                  marginLeft: 16,
+                }}
+              />
+            </TouchableOpacity>
+          )}
         </View>
         <View style={tw`absolute top-28 w-full`}>
           <View style={tw`w-full flex flex-row items-center justify-evenly`}>

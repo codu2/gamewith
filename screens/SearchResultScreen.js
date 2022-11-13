@@ -24,23 +24,25 @@ const SearchResultScreen = ({ route }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <ChevronLeftIcon color="#f4f4f4" size={24} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("user")}>
-          <Image
-            source={
-              user
-                ? { uri: user.profile_image_url }
-                : require("../assets/game/non-member.jpg")
-            }
-            style={{
-              width: 40,
-              height: 40,
-              resizeMode: "cover",
-              borderRadius: 20,
-              cursor: "pointer",
-              marginLeft: 16,
-            }}
-          />
-        </TouchableOpacity>
+        {user?.id && (
+          <TouchableOpacity onPress={() => navigation.navigate("user")}>
+            <Image
+              source={
+                user
+                  ? { uri: user.profile_image_url }
+                  : require("../assets/game/non-member.jpg")
+              }
+              style={{
+                width: 40,
+                height: 40,
+                resizeMode: "cover",
+                borderRadius: 20,
+                cursor: "pointer",
+                marginLeft: 16,
+              }}
+            />
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={tw`py-4 px-2`}>

@@ -136,55 +136,59 @@ const HomeScreen = () => {
         <Text style={tw`text-white text-lg font-bold`}>
           GAME <Text style={tw`text-[#8758FF]`}>WITH</Text>
         </Text>
-        <View style={tw`flex flex-row items-center`}>
-          <TouchableOpacity>
-            <BellIcon color="#f4f4f4" size={24} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("user")}>
-            <Image
-              source={
-                user
-                  ? { uri: user.profile_image_url }
-                  : require("../assets/game/non-member.jpg")
-              }
-              style={{
-                width: 40,
-                height: 40,
-                resizeMode: "cover",
-                borderRadius: 20,
-                cursor: "pointer",
-                marginLeft: 16,
-              }}
-            />
-          </TouchableOpacity>
-        </View>
+        {user?.id && (
+          <View style={tw`flex flex-row items-center`}>
+            <TouchableOpacity>
+              <BellIcon color="#f4f4f4" size={24} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("user")}>
+              <Image
+                source={
+                  user
+                    ? { uri: user.profile_image_url }
+                    : require("../assets/game/non-member.jpg")
+                }
+                style={{
+                  width: 40,
+                  height: 40,
+                  resizeMode: "cover",
+                  borderRadius: 20,
+                  cursor: "pointer",
+                  marginLeft: 16,
+                }}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       <ScrollView>
-        <View style={tw`py-4 px-2`}>
-          <View style={tw`pb-4`}>
-            <Text style={tw`text-white text-lg font-semibold`}>
-              팔로우한 채널
-            </Text>
+        {user?.id && (
+          <View style={tw`py-4 px-2`}>
+            <View style={tw`pb-4`}>
+              <Text style={tw`text-white text-lg font-semibold`}>
+                팔로우한 채널
+              </Text>
+            </View>
+            <FlatList
+              horizontal
+              keyExtractor={(item) => item.id}
+              showsHorizontalScrollIndicator={false}
+              data={follows}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("streamer", item)}
+                  style={tw`h-14 w-14 mx-2`}
+                >
+                  <Image
+                    source={{ uri: item.profile_image_url }}
+                    style={tw`h-14 w-14 rounded-full`}
+                  />
+                </TouchableOpacity>
+              )}
+            />
           </View>
-          <FlatList
-            horizontal
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-            data={follows}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => navigation.navigate("streamer", item)}
-                style={tw`h-14 w-14 mx-2`}
-              >
-                <Image
-                  source={{ uri: item.profile_image_url }}
-                  style={tw`h-14 w-14 rounded-full`}
-                />
-              </TouchableOpacity>
-            )}
-          />
-        </View>
+        )}
 
         <View style={tw`py-4 px-2`}>
           <View style={tw`flex flex-row items-center justify-between pb-4`}>
