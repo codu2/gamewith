@@ -4,8 +4,8 @@ import {
   SafeAreaView,
   Image,
   FlatList,
-  TouchableOpacity,
   ScrollView,
+  Pressable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import tw from "twrnc";
@@ -131,17 +131,20 @@ const HomeScreen = () => {
   }, []);
 
   return (
-    <SafeAreaView style={tw`flex flex-1 bg-black`}>
-      <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
+    <SafeAreaView style={tw`flex-1 bg-black`}>
+      <View style={tw`h-14 flex-row items-center justify-between px-4 py-2`}>
         <Text style={tw`text-white text-lg font-bold`}>
           GAME <Text style={tw`text-[#8758FF]`}>WITH</Text>
         </Text>
         {user?.id && (
           <View style={tw`flex flex-row items-center`}>
-            <TouchableOpacity>
+            <Pressable style={({ pressed }) => pressed && tw`opacity-70`}>
               <BellIcon color="#f4f4f4" size={24} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("user")}>
+            </Pressable>
+            <Pressable
+              style={({ pressed }) => pressed && tw`opacity-70`}
+              onPress={() => navigation.navigate("user")}
+            >
               <Image
                 source={
                   user
@@ -157,147 +160,162 @@ const HomeScreen = () => {
                   marginLeft: 16,
                 }}
               />
-            </TouchableOpacity>
+            </Pressable>
           </View>
         )}
       </View>
 
-      <ScrollView>
-        {user?.id && (
+      <View style={tw`flex-1`}>
+        <ScrollView>
+          {user?.id && (
+            <View style={tw`py-4 px-2`}>
+              <View style={tw`pb-4`}>
+                <Text style={tw`text-white text-lg font-semibold`}>
+                  팔로우한 채널
+                </Text>
+              </View>
+              <FlatList
+                horizontal
+                keyExtractor={(item, index) => item.id}
+                showsHorizontalScrollIndicator={false}
+                data={follows}
+                renderItem={({ item }) => (
+                  <Pressable
+                    onPress={() => navigation.navigate("streamer", item)}
+                    style={({ pressed }) =>
+                      tw`h-14 w-14 mx-2 ${pressed ? "opacity-70" : ""}`
+                    }
+                  >
+                    <Image
+                      source={{ uri: item.profile_image_url }}
+                      style={tw`h-14 w-14 rounded-full`}
+                    />
+                  </Pressable>
+                )}
+              />
+            </View>
+          )}
+
           <View style={tw`py-4 px-2`}>
-            <View style={tw`pb-4`}>
-              <Text style={tw`text-white text-lg font-semibold`}>
-                팔로우한 채널
-              </Text>
+            <View style={tw`flex flex-row items-center justify-between pb-4`}>
+              <Text style={tw`text-white text-lg font-semibold`}>카테고리</Text>
+              <Pressable style={({ pressed }) => pressed && tw`opacity-70`}>
+                <EllipsisHorizontalIcon color="#fff" size={28} />
+              </Pressable>
             </View>
             <FlatList
               horizontal
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => item.id}
               showsHorizontalScrollIndicator={false}
-              data={follows}
+              data={categories}
               renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("streamer", item)}
-                  style={tw`h-14 w-14 mx-2`}
+                <Pressable
+                  style={({ pressed }) =>
+                    tw`relative h-44 w-36 mx-2 ${pressed ? "opacity-70" : ""}`
+                  }
+                  onPress={() => navigation.navigate("category", item)}
                 >
                   <Image
-                    source={{ uri: item.profile_image_url }}
-                    style={tw`h-14 w-14 rounded-full`}
+                    source={item.imageUrl}
+                    style={tw`w-36 h-44 rounded-xl opacity-70`}
                   />
-                </TouchableOpacity>
+                  <Text
+                    style={tw`absolute bottom-4 w-full text-white font-bold text-center`}
+                  >
+                    {item.name}
+                  </Text>
+                </Pressable>
               )}
             />
           </View>
-        )}
 
-        <View style={tw`py-4 px-2`}>
-          <View style={tw`flex flex-row items-center justify-between pb-4`}>
-            <Text style={tw`text-white text-lg font-semibold`}>카테고리</Text>
-            <TouchableOpacity>
-              <EllipsisHorizontalIcon color="#fff" size={28} />
-            </TouchableOpacity>
-          </View>
-          <FlatList
-            horizontal
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-            data={categories}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={tw`relative h-44 w-36 mx-2`}
-                onPress={() => navigation.navigate("category", item)}
-              >
-                <Image
-                  source={item.imageUrl}
-                  style={tw`w-36 h-44 rounded-xl opacity-70`}
-                />
-                <Text
-                  style={tw`absolute bottom-4 w-full text-white font-bold text-center`}
+          <View style={tw`py-4 px-2`}>
+            <View style={tw`flex flex-row items-center justify-between pb-4`}>
+              <Text style={tw`text-white text-lg font-semibold`}>
+                실시간 라이브
+              </Text>
+              <Pressable style={({ pressed }) => pressed && tw`opacity-70`}>
+                <EllipsisHorizontalIcon color="#fff" size={28} />
+              </Pressable>
+            </View>
+            <FlatList
+              horizontal
+              keyExtractor={(item, index) => item.id.videoId}
+              showsHorizontalScrollIndicator={false}
+              data={live}
+              renderItem={({ item }) => (
+                <Pressable
+                  style={({ pressed }) =>
+                    tw`relative w-72 h-44 mx-2 ${pressed ? "opacity-70" : ""}`
+                  }
                 >
-                  {item.name}
-                </Text>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-
-        <View style={tw`py-4 px-2`}>
-          <View style={tw`flex flex-row items-center justify-between pb-4`}>
-            <Text style={tw`text-white text-lg font-semibold`}>
-              실시간 라이브
-            </Text>
-            <TouchableOpacity>
-              <EllipsisHorizontalIcon color="#fff" size={28} />
-            </TouchableOpacity>
-          </View>
-          <FlatList
-            horizontal
-            keyExtractor={(item) => item.id.videoId}
-            showsHorizontalScrollIndicator={false}
-            data={live}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={tw`relative w-72 h-44 mx-2`}>
-                <Image
-                  source={{
-                    uri: item.thumbnail_url
-                      ?.replace("{width}", 288)
-                      .replace("{height}", 176),
-                  }}
-                  style={tw`w-72 h-44 rounded-md opacity-70`}
-                />
-                <View style={tw`absolute top-3 left-2 flex flex-row`}>
-                  <View
-                    style={tw`bg-red-500 border border-red-500 px-2 py-1 rounded-lg`}
-                  >
-                    <Text style={tw`text-white`}>LIVE</Text>
+                  <Image
+                    source={{
+                      uri: item.thumbnail_url
+                        ?.replace("{width}", 288)
+                        .replace("{height}", 176),
+                    }}
+                    style={tw`w-72 h-44 rounded-md opacity-70`}
+                  />
+                  <View style={tw`absolute top-3 left-2 flex flex-row`}>
+                    <View
+                      style={tw`bg-red-500 border border-red-500 px-2 py-1 rounded-lg`}
+                    >
+                      <Text style={tw`text-white`}>LIVE</Text>
+                    </View>
+                    <View
+                      style={tw`flex flex-row bg-gray-500 border border-gray-500 px-2 py-1 rounded-lg ml-2`}
+                    >
+                      <EyeIcon
+                        color="#fff"
+                        size={16}
+                        style={tw`text-slate-200`}
+                      />
+                      <Text style={tw`text-slate-200 ml-1`}>
+                        {(item.viewer_count / 1000).toFixed(2)}k
+                      </Text>
+                    </View>
                   </View>
-                  <View
-                    style={tw`flex flex-row bg-gray-500 border border-gray-500 px-2 py-1 rounded-lg ml-2`}
-                  >
-                    <EyeIcon
-                      color="#fff"
-                      size={16}
-                      style={tw`text-slate-200`}
-                    />
-                    <Text style={tw`text-slate-200 ml-1`}>
-                      {(item.viewer_count / 1000).toFixed(2)}k
-                    </Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-
-        <View style={tw`py-4 px-2 mb-16`}>
-          <View style={tw`flex flex-row items-center justify-between pb-4`}>
-            <Text style={tw`text-white text-lg font-semibold`}>
-              사운드트랙 플레이리스트
-            </Text>
-            <TouchableOpacity>
-              <EllipsisHorizontalIcon color="#fff" size={28} />
-            </TouchableOpacity>
+                </Pressable>
+              )}
+            />
           </View>
-          <FlatList
-            horizontal
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-            data={soundtrack}
-            renderItem={({ item }) => (
-              <TouchableOpacity key={item.id} style={tw`w-40 h-40 mx-2`}>
-                <Image
-                  source={{
-                    uri: item.image_url
-                      ?.replace("{width}", 160)
-                      .replace("{height}", 160),
-                  }}
-                  style={tw`w-40 h-40 rounded-lg`}
-                />
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-      </ScrollView>
+
+          <View style={tw`py-4 px-2 mb-16`}>
+            <View style={tw`flex flex-row items-center justify-between pb-4`}>
+              <Text style={tw`text-white text-lg font-semibold`}>
+                사운드트랙 플레이리스트
+              </Text>
+              <Pressable style={({ pressed }) => pressed && tw`opacity-70`}>
+                <EllipsisHorizontalIcon color="#fff" size={28} />
+              </Pressable>
+            </View>
+            <FlatList
+              horizontal
+              keyExtractor={(item, index) => item.id}
+              showsHorizontalScrollIndicator={false}
+              data={soundtrack}
+              renderItem={({ item }) => (
+                <Pressable
+                  key={item.id}
+                  style={({ pressed }) =>
+                    tw`w-40 h-40 mx-2 ${pressed ? "opacity-70" : ""}`
+                  }
+                >
+                  <Image
+                    source={{
+                      uri: item.image_url
+                        ?.replace("{width}", 160)
+                        .replace("{height}", 160),
+                    }}
+                    style={tw`w-40 h-40 rounded-lg`}
+                  />
+                </Pressable>
+              )}
+            />
+          </View>
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };

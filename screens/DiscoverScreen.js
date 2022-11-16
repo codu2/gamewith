@@ -1,12 +1,12 @@
 import {
   View,
-  TouchableOpacity,
   Text,
   SafeAreaView,
   Image,
   TextInput,
   FlatList,
   ScrollView,
+  Pressable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import tw from "twrnc";
@@ -169,11 +169,17 @@ const DiscoverScreen = () => {
   return (
     <SafeAreaView style={tw`flex flex-1 bg-black`}>
       <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Pressable
+          style={({ pressed }) => pressed && tw`opacity-70`}
+          onPress={() => navigation.goBack()}
+        >
           <ChevronLeftIcon color="#f4f4f4" size={24} />
-        </TouchableOpacity>
+        </Pressable>
         {user?.id && (
-          <TouchableOpacity onPress={() => navigation.navigate("user")}>
+          <Pressable
+            style={({ pressed }) => pressed && tw`opacity-70`}
+            onPress={() => navigation.navigate("user")}
+          >
             <Image
               source={
                 user
@@ -189,7 +195,7 @@ const DiscoverScreen = () => {
                 marginLeft: 16,
               }}
             />
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
 
@@ -221,9 +227,9 @@ const DiscoverScreen = () => {
             <Text style={tw`text-white text-lg font-semibold`}>
               인기 실시간 게임
             </Text>
-            <TouchableOpacity>
+            <Pressable style={({ pressed }) => pressed && tw`opacity-70`}>
               <EllipsisHorizontalIcon color="#fff" size={28} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
           <FlatList
             keyExtractor={(item) => item.id}
@@ -231,8 +237,8 @@ const DiscoverScreen = () => {
             showsHorizontalScrollIndicator={false}
             data={trendingGame}
             renderItem={({ item }) => (
-              <TouchableOpacity
-                style={tw`mx-2`}
+              <Pressable
+                style={({ pressed }) => tw`mx-2 ${pressed ? "opacity-70" : ""}`}
                 onPress={() => navigation.navigate("category", item)}
               >
                 <Image
@@ -243,7 +249,7 @@ const DiscoverScreen = () => {
                   }}
                   style={tw`w-60 h-60 rounded-xl`}
                 />
-              </TouchableOpacity>
+              </Pressable>
             )}
           />
         </View>
@@ -254,9 +260,9 @@ const DiscoverScreen = () => {
             <Text style={tw`text-white text-lg font-semibold`}>
               스트리머 순위
             </Text>
-            <TouchableOpacity>
+            <Pressable style={({ pressed }) => pressed && tw`opacity-70`}>
               <EllipsisHorizontalIcon color="#fff" size={28} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
           <FlatList
             style={tw`max-h-80`}
@@ -288,9 +294,15 @@ const DiscoverScreen = () => {
                     </View>
                   </View>
                 </View>
-                <TouchableOpacity style={tw`border border-[#8758FF] px-2 py-1`}>
+                <Pressable
+                  style={({ pressed }) =>
+                    tw`border border-[#8758FF] px-2 py-1 ${
+                      pressed ? "opacity-70" : ""
+                    }`
+                  }
+                >
                   <Text style={tw`text-[#8758FF]`}>Watch</Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
             )}
           />

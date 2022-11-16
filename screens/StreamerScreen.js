@@ -1,4 +1,11 @@
-import { View, TouchableOpacity, Image, Text, FlatList } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  Image,
+  Text,
+  FlatList,
+  Pressable,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import tw from "twrnc";
 import { useSelector } from "react-redux";
@@ -106,7 +113,7 @@ const StreamerScreen = ({ route }) => {
   }, []);
 
   return (
-    <View style={tw`flex flex-1 bg-black`}>
+    <View style={tw`flex-1 bg-black`}>
       <View style={tw`relative h-100`}>
         <Image
           source={require("../assets/game/banner.jpeg")}
@@ -115,11 +122,17 @@ const StreamerScreen = ({ route }) => {
         <View
           style={tw`absolute top-14 w-full flex flex-row items-center justify-between px-4 pb-2`}
         >
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Pressable
+            style={({ pressed }) => pressed && tw`opacity-70`}
+            onPress={() => navigation.goBack()}
+          >
             <ChevronLeftIcon color="#f4f4f4" size={24} />
-          </TouchableOpacity>
+          </Pressable>
           {user?.id && (
-            <TouchableOpacity>
+            <Pressable
+              style={({ pressed }) => pressed && tw`opacity-70`}
+              onPress={() => navigation.navigate("user")}
+            >
               <Image
                 source={{ uri: user.profile_image_url }}
                 style={{
@@ -131,13 +144,13 @@ const StreamerScreen = ({ route }) => {
                   marginLeft: 16,
                 }}
               />
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
         <View style={tw`absolute top-28 w-full`}>
-          <View style={tw`w-full flex flex-row items-center justify-evenly`}>
+          <View style={tw`w-full flex-row items-center justify-evenly`}>
             <View
-              style={tw`flex flex-row items-center bg-[#333333] rounded-lg py-1.5 px-3`}
+              style={tw`flex-row items-center bg-[#333333] rounded-lg py-1.5 px-3`}
             >
               <View
                 style={tw`w-2 h-2 ${
@@ -153,7 +166,7 @@ const StreamerScreen = ({ route }) => {
               style={tw`w-32 h-32 rounded-3xl`}
             />
             <View
-              style={tw`flex flex-row items-center bg-yellow-500 rounded-lg py-1.5 px-3`}
+              style={tw`flex-row items-center bg-yellow-500 rounded-lg py-1.5 px-3`}
             >
               <Text style={tw`text-white text-sm font-semibold`}>
                 {route.params.broadcaster_type.toUpperCase()}
@@ -165,14 +178,16 @@ const StreamerScreen = ({ route }) => {
               {route.params.display_name}
             </Text>
           </View>
-          <View style={tw`flex flex-row items-center`}>
-            <View style={tw`flex-1 mx-2 flex items-center justify-center`}>
-              <Text
-                style={tw`text-[#8758FF] font-semibold text-base text-center`}
-              >
-                {channelTeam?.team_name}
-              </Text>
-            </View>
+          <View style={tw`flex-row items-center`}>
+            {channelTeam?.team_name && (
+              <View style={tw`flex-1 mx-2 flex items-center justify-center`}>
+                <Text
+                  style={tw`text-[#8758FF] font-semibold text-base text-center`}
+                >
+                  {channelTeam?.team_name}
+                </Text>
+              </View>
+            )}
             <View style={tw`flex-1 mx-2 flex items-center justify-center`}>
               <Text
                 style={tw`text-[#8758FF] font-semibold text-base text-center`}
@@ -180,7 +195,11 @@ const StreamerScreen = ({ route }) => {
                 {(route.params.view_count / 10000).toFixed(2)}M
               </Text>
             </View>
-            <View style={tw`flex-2 mx-2 flex items-center justify-center`}>
+            <View
+              style={tw`${
+                channelTeam?.team_name ? "flex-2" : "flex-1"
+              } mx-2 flex items-center justify-center`}
+            >
               <Text
                 style={tw`text-[#8758FF] font-semibold text-base text-center`}
               >
@@ -189,17 +208,23 @@ const StreamerScreen = ({ route }) => {
             </View>
           </View>
           <View style={tw`flex flex-row items-center justify-center`}>
-            <View style={tw`flex-1 mx-2 flex items-center justify-center`}>
-              <Text style={tw`text-gray-400 text-xs mt-1 text-center`}>
-                Team
-              </Text>
-            </View>
+            {channelTeam?.team_name && (
+              <View style={tw`flex-1 mx-2 flex items-center justify-center`}>
+                <Text style={tw`text-gray-400 text-xs mt-1 text-center`}>
+                  Team
+                </Text>
+              </View>
+            )}
             <View style={tw`flex-1 mx-2 flex items-center justify-center`}>
               <Text style={tw`text-gray-400 text-xs mt-1 text-center`}>
                 View Count
               </Text>
             </View>
-            <View style={tw`flex-2 mx-2 flex items-center justify-center`}>
+            <View
+              style={tw`${
+                channelTeam?.team_name ? "flex-2" : "flex-1"
+              } mx-2 flex items-center justify-center`}
+            >
               <Text style={tw`text-gray-400 text-xs mt-1 text-center`}>
                 Game
               </Text>
@@ -209,8 +234,11 @@ const StreamerScreen = ({ route }) => {
       </View>
 
       <View style={tw`py-4 px-2 bg-[#0d0d0d] flex-1`}>
-        <View style={tw`flex flex-row items-center justify-evenly mt-6 mb-12`}>
-          <TouchableOpacity onPress={() => setSelected("stream")}>
+        <View style={tw`flex-row items-center justify-evenly mt-6 mb-12`}>
+          <Pressable
+            style={({ pressed }) => pressed && tw`opacity-70`}
+            onPress={() => setSelected("stream")}
+          >
             <Text
               style={tw`${
                 selected === "stream" ? "text-[#8756FF]" : "text-gray-300"
@@ -218,8 +246,11 @@ const StreamerScreen = ({ route }) => {
             >
               라이브
             </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setSelected("video")}>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => pressed && tw`opacity-70`}
+            onPress={() => setSelected("video")}
+          >
             <Text
               style={tw`${
                 selected === "video" ? "text-[#8756FF]" : "text-gray-300"
@@ -227,8 +258,11 @@ const StreamerScreen = ({ route }) => {
             >
               비디오
             </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setSelected("clip")}>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => pressed && tw`opacity-70`}
+            onPress={() => setSelected("clip")}
+          >
             <Text
               style={tw`${
                 selected === "clip" ? "text-[#8756FF]" : "text-gray-300"
@@ -236,7 +270,7 @@ const StreamerScreen = ({ route }) => {
             >
               클립
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {selected === "stream" && (
@@ -244,11 +278,15 @@ const StreamerScreen = ({ route }) => {
             {isLive?.is_live ? (
               <FlatList
                 horizontal
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item, index) => item.id}
                 showsHorizontalScrollIndicator={false}
                 data={streams}
                 renderItem={({ item }) => (
-                  <TouchableOpacity style={tw`relative w-92 h-52 mx-2`}>
+                  <Pressable
+                    style={({ pressed }) =>
+                      tw`relative w-92 h-52 mx-2 ${pressed ? "opacity-70" : ""}`
+                    }
+                  >
                     <Image
                       source={{
                         uri: item?.thumbnail_url
@@ -276,7 +314,7 @@ const StreamerScreen = ({ route }) => {
                         </Text>
                       </View>
                     </View>
-                  </TouchableOpacity>
+                  </Pressable>
                 )}
               />
             ) : (
@@ -288,49 +326,69 @@ const StreamerScreen = ({ route }) => {
           </View>
         )}
         {selected === "video" && (
-          <FlatList
-            horizontal
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-            data={videos.filter((item) => item.thumbnail_url)}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={tw`relative w-80 h-48 mx-2`}>
-                <Image
-                  source={{
-                    uri: item?.thumbnail_url
-                      ?.replace("%{width}", 480)
-                      .replace("%{height}", 272),
-                  }}
-                  style={tw`w-80 h-48 rounded-2xl opacity-70`}
-                />
-                <View style={tw`absolute top-18 left-34`}>
-                  <PlayIcon color="#f4f4f4" size={32} />
-                </View>
-              </TouchableOpacity>
-            )}
-          />
+          <View style={tw`w-full flex items-center`}>
+            <FlatList
+              horizontal
+              keyExtractor={(item, index) => item.id}
+              showsHorizontalScrollIndicator={false}
+              data={videos.filter((item) => item.thumbnail_url)}
+              renderItem={({ item }) => (
+                <Pressable
+                  style={({ pressed }) =>
+                    tw`relative w-80 h-48 mx-2 ${pressed ? "opacity-70" : ""}`
+                  }
+                >
+                  <Image
+                    source={{
+                      uri: item?.thumbnail_url
+                        ?.replace("%{width}", 480)
+                        .replace("%{height}", 272),
+                    }}
+                    style={tw`w-80 h-48 rounded-2xl opacity-70`}
+                  />
+                  <View style={tw`absolute top-18 left-34`}>
+                    <PlayIcon color="#f4f4f4" size={32} />
+                  </View>
+                </Pressable>
+              )}
+            />
+          </View>
         )}
         {selected === "clip" && (
-          <FlatList
-            horizontal
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-            data={clips.filter((item) => item.thumbnail_url)}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={tw`relative w-80 h-48 mx-2`}>
-                <Image
-                  source={{
-                    uri: item?.thumbnail_url,
-                  }}
-                  style={tw`w-80 h-48 rounded-2xl opacity-70`}
-                />
-                <View style={tw`absolute top-18 left-34`}>
-                  <PlayIcon color="#f4f4f4" size={32} />
-                </View>
-              </TouchableOpacity>
-            )}
-          />
+          <View style={tw`w-full flex items-center`}>
+            <FlatList
+              horizontal
+              keyExtractor={(item, index) => item.id}
+              showsHorizontalScrollIndicator={false}
+              data={clips.filter((item) => item.thumbnail_url)}
+              renderItem={({ item }) => (
+                <Pressable
+                  style={({ pressed }) =>
+                    tw`relative w-80 h-48 mx-2 ${pressed ? "opacity-70" : ""}`
+                  }
+                >
+                  <Image
+                    source={{
+                      uri: item?.thumbnail_url,
+                    }}
+                    style={tw`w-80 h-48 rounded-2xl opacity-70`}
+                  />
+                  <View style={tw`absolute top-18 left-34`}>
+                    <PlayIcon color="#f4f4f4" size={32} />
+                  </View>
+                </Pressable>
+              )}
+            />
+          </View>
         )}
+        {(selected === "video" || selected === "clip") &&
+          (videos.length === 0 || clips.length === 0) && (
+            <View style={tw`absolute top-50 w-full`}>
+              <Text style={tw`text-gray-300 font-semibold text-center`}>
+                컨텐츠가 없습니다.
+              </Text>
+            </View>
+          )}
       </View>
     </View>
   );

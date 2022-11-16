@@ -1,11 +1,11 @@
 import {
   SafeAreaView,
   View,
-  TouchableOpacity,
   Image,
   Text,
   FlatList,
   ScrollView,
+  Pressable,
 } from "react-native";
 import React from "react";
 import tw from "twrnc";
@@ -21,11 +21,17 @@ const SearchResultScreen = ({ route }) => {
   return (
     <SafeAreaView style={tw`flex flex-1 bg-black`}>
       <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Pressable
+          style={({ pressed }) => pressed && tw`opacity-70`}
+          onPress={() => navigation.goBack()}
+        >
           <ChevronLeftIcon color="#f4f4f4" size={24} />
-        </TouchableOpacity>
+        </Pressable>
         {user?.id && (
-          <TouchableOpacity onPress={() => navigation.navigate("user")}>
+          <Pressable
+            style={({ pressed }) => pressed && tw`opacity-70`}
+            onPress={() => navigation.navigate("user")}
+          >
             <Image
               source={
                 user
@@ -41,7 +47,7 @@ const SearchResultScreen = ({ route }) => {
                 marginLeft: 16,
               }}
             />
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
 
@@ -58,21 +64,26 @@ const SearchResultScreen = ({ route }) => {
       <ScrollView style={tw`flex flex-1 mb-4  bg-[#0d0d0d]`}>
         <View style={tw`py-4 px-2`}>
           <View style={tw`py-2`}>
-            <Text style={tw`text-white font-semibold text-xl`}>게임</Text>
+            <Text style={tw`text-white font-semibold text-lg`}>게임</Text>
           </View>
           {route.params.games.length > 0 ? (
             <FlatList
               horizontal
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => item.id}
               showsHorizontalScrollIndicator={false}
               data={route.params.games}
               renderItem={({ item }) => (
-                <TouchableOpacity key={item.id} style={tw`h-32 w-24 mx-2`}>
+                <Pressable
+                  key={item.id}
+                  style={({ pressed }) =>
+                    tw`h-32 w-24 mx-2 ${pressed ? "opacity-70" : ""}`
+                  }
+                >
                   <Image
                     source={{ uri: item.box_art_url }}
                     style={tw`w-24 h-32 rounded-lg`}
                   />
-                </TouchableOpacity>
+                </Pressable>
               )}
             />
           ) : (
@@ -86,7 +97,7 @@ const SearchResultScreen = ({ route }) => {
 
         <View style={tw`py-4 px-2`}>
           <View style={tw`py-2`}>
-            <Text style={tw`text-white font-semibold text-xl`}>스트리머</Text>
+            <Text style={tw`text-white font-semibold text-lg`}>스트리머</Text>
           </View>
           {route.params.streamers.length > 0 ? (
             <FlatList
@@ -120,11 +131,15 @@ const SearchResultScreen = ({ route }) => {
                       )}
                     </View>
                   </View>
-                  <TouchableOpacity
-                    style={tw`border border-[#8758FF] px-2 py-1`}
+                  <Pressable
+                    style={({ pressed }) =>
+                      tw`border border-[#8758FF] px-2 py-1 ${
+                        pressed ? "opacity-70" : ""
+                      }`
+                    }
                   >
                     <Text style={tw`text-[#8758FF]`}>Watch</Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
               )}
             />

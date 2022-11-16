@@ -3,8 +3,8 @@ import {
   Image,
   Text,
   TextInput,
-  TouchableOpacity,
   ScrollView,
+  Pressable,
 } from "react-native";
 import React, { useState } from "react";
 import tw from "twrnc";
@@ -79,14 +79,18 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={tw`flex flex-1 bg-black`}>
-      <Image
-        source={require("../assets/game/user.jpg")}
-        style={tw`w-full h-90`}
-      />
-      <View style={tw`flex flex-1 items-center`}>
-        <View style={tw`flex flex-row items-center w-full justify-evenly py-6`}>
-          <TouchableOpacity onPress={() => setSelected("login")}>
+    <View style={tw`flex-1 bg-black`}>
+      <View style={tw`flex-4`}>
+        <Image
+          source={require("../assets/game/user.jpg")}
+          style={tw`w-full h-full`}
+        />
+      </View>
+      <View style={tw`flex-5 items-center`}>
+        <View
+          style={tw`flex-row items-center w-full justify-evenly py-5 border-b border-gray-800`}
+        >
+          <Pressable onPress={() => setSelected("login")}>
             <Text
               style={tw`text-base ${
                 selected === "login" ? "text-[#8756FF]" : "text-gray-300"
@@ -94,8 +98,8 @@ const LoginScreen = () => {
             >
               로그인
             </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setSelected("signup")}>
+          </Pressable>
+          <Pressable onPress={() => setSelected("signup")}>
             <Text
               style={tw`text-base ${
                 selected === "signup" ? "text-[#8756FF]" : "text-gray-300"
@@ -103,11 +107,12 @@ const LoginScreen = () => {
             >
               회원가입
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         <ScrollView
-          contentContainerStyle={tw`w-full flex items-center mt-4 pb-28`}
+          alwaysBounceVertical={false}
+          contentContainerStyle={tw`w-full flex items-center mt-4`}
         >
           <View>
             <Text style={tw`text-base font-semibold text-gray-300`}>
@@ -168,30 +173,40 @@ const LoginScreen = () => {
             </>
           )}
 
-          <View style={tw`mt-2 mb-4`}>
-            <TouchableOpacity
-              style={tw`w-64 bg-[#181818] py-3 my-2 flex items-center justify-center rounded-lg`}
+          <View style={tw`mt-2 mb-14`}>
+            <Pressable
+              android_ripple={{ color: "#242424" }}
+              style={({ pressed }) =>
+                tw`w-64 bg-[#181818] py-3 my-2 flex items-center justify-center rounded-lg ${
+                  pressed ? "opacity-70" : ""
+                }`
+              }
             >
               <Text style={tw`text-gray-200 font-bold text-base`}>
                 {selected === "login" ? "로그인" : "회원가입"}
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </Pressable>
+            <Pressable
+              android_ripple={{ color: "#8756FF" }}
               onPress={signInWithTwitch}
-              style={tw`w-64 bg-[#8758FF] py-3 my-2 flex items-center justify-center rounded-lg`}
+              style={({ pressed }) =>
+                tw`w-64 bg-[#8758FF] py-3 my-2 flex items-center justify-center rounded-lg ${
+                  pressed ? "opacity-70" : ""
+                }`
+              }
             >
               <Text style={tw`text-gray-200 font-bold text-base`}>
                 Twitch로 로그인하기
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </Pressable>
+            <Pressable
               onPress={() => navigation.navigate("navigation")}
-              style={tw`my-2`}
+              style={({ pressed }) => tw`my-2 ${pressed ? "opacity-70" : ""}`}
             >
               <Text style={tw`text-[#8758FF] text-sm text-center`}>
                 비회원으로 이용하기
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </ScrollView>
       </View>

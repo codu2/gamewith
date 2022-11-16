@@ -2,11 +2,11 @@ import {
   View,
   Text,
   SafeAreaView,
-  TouchableOpacity,
   Image,
   TextInput,
   FlatList,
   ScrollView,
+  Pressable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import tw from "twrnc";
@@ -148,13 +148,19 @@ const StreamingScreen = () => {
   };
 
   return (
-    <SafeAreaView style={tw`flex flex-1 bg-black`}>
-      <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+    <SafeAreaView style={tw`flex-1 bg-black`}>
+      <View style={tw`flex-row items-center justify-between px-4 py-2`}>
+        <Pressable
+          style={({ pressed }) => pressed && tw`opacity-70`}
+          onPress={() => navigation.goBack()}
+        >
           <ChevronLeftIcon color="#f4f4f4" size={24} />
-        </TouchableOpacity>
+        </Pressable>
         {user?.id && (
-          <TouchableOpacity onPress={() => navigation.navigate("user")}>
+          <Pressable
+            style={({ pressed }) => pressed && tw`opacity-70`}
+            onPress={() => navigation.navigate("user")}
+          >
             <Image
               source={
                 user
@@ -170,7 +176,7 @@ const StreamingScreen = () => {
                 marginLeft: 16,
               }}
             />
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
 
@@ -181,7 +187,7 @@ const StreamingScreen = () => {
           </Text>
         </View>
         <View
-          style={tw`flex flex-row bg-transparent border border-[#8758FF] items-center px-2 h-12 rounded-lg`}
+          style={tw`flex-row bg-transparent border border-[#8758FF] items-center px-2 h-12 rounded-lg`}
         >
           <MagnifyingGlassIcon color="#ccc" size={18} style={tw`mx-2`} />
           <TextInput
@@ -200,34 +206,42 @@ const StreamingScreen = () => {
 
       <View style={tw`py-4 px-2`}>
         <FlatList
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item, index) => item.id}
           horizontal
           showsHorizontalScrollIndicator={false}
           data={categories}
           renderItem={({ item }) => (
-            <TouchableOpacity
+            <Pressable
               onPress={() => {
                 setSelected(item.id);
               }}
-              style={tw`flex items-center justify-center px-4 py-2 bg-[#181818] rounded-xl mx-1 ${
-                selected === item.id ? "bg-[#8758FF]" : ""
-              }`}
+              style={({ pressed }) =>
+                tw`items-center justify-center px-4 py-2 bg-[#181818] rounded-xl mx-1 ${
+                  selected === item.id ? "bg-[#8758FF]" : ""
+                } ${pressed ? "opacity-70" : ""}`
+              }
             >
               <Text style={tw`text-gray-200 font-semibold text-sm`}>
                 {item.fullName}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
         />
       </View>
 
-      <ScrollView style={tw`flex flex-1 py-4 px-2 mt-2 mb-18 bg-[#0d0d0d]`}>
+      <ScrollView style={tw`flex-1 py-4 px-2 mt-2 mb-18 bg-[#0d0d0d]`}>
         <FlatList
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           data={stream}
           renderItem={({ item }) => (
-            <TouchableOpacity style={tw`relative w-80 h-48 mx-auto my-2`}>
+            <Pressable
+              style={({ pressed }) =>
+                tw`relative w-80 h-48 mx-auto my-2 ${
+                  pressed ? "opacity-70" : ""
+                }`
+              }
+            >
               <Image
                 source={{
                   uri: item.thumbnail_url
@@ -251,7 +265,7 @@ const StreamingScreen = () => {
                   </Text>
                 </View>
               </View>
-            </TouchableOpacity>
+            </Pressable>
           )}
         />
       </ScrollView>
