@@ -1,24 +1,21 @@
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
   SafeAreaView,
   Image,
-  TextInput,
   FlatList,
   ScrollView,
-  Pressable,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import tw from "twrnc";
-import {
-  ChevronLeftIcon,
-  MagnifyingGlassIcon,
-  EllipsisHorizontalIcon,
-} from "react-native-heroicons/outline";
+import { EllipsisHorizontalIcon } from "react-native-heroicons/outline";
 import { CLIENT_ID, TOKEN, ACCESS_TOKEN } from "@env";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
-import { selectUser } from "../slices/userSlice";
+import Title from "../components/ui/Title";
+import SearchInput from "../components/ui/SearchInput";
+import PressableItem from "../components/ui/PressableItem";
+import Header from "../components/ui/Header";
+import StreamerItem from "../components/StreamerItem";
 
 const streamers = [
   {
@@ -85,7 +82,6 @@ const streamers = [
 
 const DiscoverScreen = () => {
   const navigation = useNavigation();
-  const user = useSelector(selectUser);
   const [trendingGame, setTrendingGame] = useState([]);
   const [query, setQuery] = useState("");
   const [searchGames, setSearchGames] = useState([]);
@@ -168,57 +164,18 @@ const DiscoverScreen = () => {
 
   return (
     <SafeAreaView style={tw`flex flex-1 bg-black`}>
-      <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
-        <Pressable
-          style={({ pressed }) => pressed && tw`opacity-70`}
-          onPress={() => navigation.goBack()}
-        >
-          <ChevronLeftIcon color="#f4f4f4" size={24} />
-        </Pressable>
-        {user?.id && (
-          <Pressable
-            style={({ pressed }) => pressed && tw`opacity-70`}
-            onPress={() => navigation.navigate("user")}
-          >
-            <Image
-              source={
-                user
-                  ? { uri: user.profile_image_url }
-                  : require("../assets/game/non-member.jpg")
-              }
-              style={{
-                width: 40,
-                height: 40,
-                resizeMode: "cover",
-                borderRadius: 20,
-                cursor: "pointer",
-                marginLeft: 16,
-              }}
-            />
-          </Pressable>
-        )}
-      </View>
+      <Header />
 
       <View style={tw`py-4 px-2`}>
         <View style={tw`pb-4`}>
-          <Text style={tw`text-white text-lg font-semibold`}>검색하기</Text>
+          <Title>검색하기</Title>
         </View>
-        <View
-          style={tw`flex flex-row bg-transparent border border-[#8758FF] items-center px-2 h-12 rounded-lg`}
-        >
-          <MagnifyingGlassIcon color="#ccc" size={18} style={tw`mx-2`} />
-          <TextInput
-            style={tw`w-80 h-10 bg-transparent px-2 py-2 text-white`}
-            placeholder="Search games or streamers"
-            autoComplete="false"
-            placeholderTextColor={"#ccc"}
-            value={query}
-            onChangeText={(text) => {
-              setQuery(text);
-            }}
-            onSubmitEditing={onSubmit}
-          />
-        </View>
+        <SearchInput
+          query={query}
+          setQuery={setQuery}
+          placeholder={"Search games or streamers"}
+          onSubmit={onSubmit}
+        />
       </View>
 
       <ScrollView>
@@ -227,9 +184,9 @@ const DiscoverScreen = () => {
             <Text style={tw`text-white text-lg font-semibold`}>
               인기 실시간 게임
             </Text>
-            <Pressable style={({ pressed }) => pressed && tw`opacity-70`}>
+            <PressableItem>
               <EllipsisHorizontalIcon color="#fff" size={28} />
-            </Pressable>
+            </PressableItem>
           </View>
           <FlatList
             keyExtractor={(item) => item.id}
@@ -237,8 +194,8 @@ const DiscoverScreen = () => {
             showsHorizontalScrollIndicator={false}
             data={trendingGame}
             renderItem={({ item }) => (
-              <Pressable
-                style={({ pressed }) => tw`mx-2 ${pressed ? "opacity-70" : ""}`}
+              <PressableItem
+                style={tw`mx-2`}
                 onPress={() => navigation.navigate("category", item)}
               >
                 <Image
@@ -249,62 +206,24 @@ const DiscoverScreen = () => {
                   }}
                   style={tw`w-60 h-60 rounded-xl`}
                 />
-              </Pressable>
+              </PressableItem>
             )}
           />
         </View>
-        {/*240X160 */}
 
         <View style={tw`py-4 px-2 mb-16`}>
           <View style={tw`flex flex-row items-center justify-between pb-4`}>
-            <Text style={tw`text-white text-lg font-semibold`}>
-              스트리머 순위
-            </Text>
-            <Pressable style={({ pressed }) => pressed && tw`opacity-70`}>
+            <Title>스트리머 순위</Title>
+            <PressableItem>
               <EllipsisHorizontalIcon color="#fff" size={28} />
-            </Pressable>
+            </PressableItem>
           </View>
           <FlatList
             style={tw`max-h-80`}
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
             data={streamers}
-            renderItem={({ item }) => (
-              <View
-                style={tw`flex flex-row items-center justify-between w-full h-18 bg-[#181818] rounded-lg px-4 py-2 my-2`}
-              >
-                <View style={tw`flex flex-row items-center`}>
-                  <Image
-                    source={item.imageUrl}
-                    style={tw`w-12 h-12 rounded-full mr-4`}
-                  />
-                  <View style={tw`min-h-10 flex justify-between`}>
-                    <Text style={tw`text-white font-semibold`}>
-                      {item.name}
-                    </Text>
-                    <View style={tw`flex flex-row items-center max-w-48`}>
-                      {item.game.map((game) => (
-                        <Text
-                          key={`${game}${new Date().getTime()}`}
-                          style={tw`text-[#8758FF] mr-2`}
-                        >
-                          {game}
-                        </Text>
-                      ))}
-                    </View>
-                  </View>
-                </View>
-                <Pressable
-                  style={({ pressed }) =>
-                    tw`border border-[#8758FF] px-2 py-1 ${
-                      pressed ? "opacity-70" : ""
-                    }`
-                  }
-                >
-                  <Text style={tw`text-[#8758FF]`}>Watch</Text>
-                </Pressable>
-              </View>
-            )}
+            renderItem={({ item }) => <StreamerItem item={item} />}
           />
         </View>
       </ScrollView>

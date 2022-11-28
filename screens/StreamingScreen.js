@@ -1,24 +1,20 @@
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
   SafeAreaView,
   Image,
-  TextInput,
   FlatList,
   ScrollView,
-  Pressable,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import tw from "twrnc";
-import {
-  ChevronLeftIcon,
-  MagnifyingGlassIcon,
-  EyeIcon,
-} from "react-native-heroicons/outline";
+import { EyeIcon } from "react-native-heroicons/outline";
 import { CLIENT_ID, TOKEN } from "@env";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
-import { selectUser } from "../slices/userSlice";
+import PressableItem from "../components/ui/PressableItem";
+import Title from "../components/ui/Title";
+import SearchInput from "../components/ui/SearchInput";
+import Header from "../components/ui/Header";
 
 const categories = [
   {
@@ -85,7 +81,6 @@ const categories = [
 
 const StreamingScreen = () => {
   const navigation = useNavigation();
-  const user = useSelector(selectUser);
   const [query, setQuery] = useState("");
   const [searchGames, setSearchGames] = useState([]);
   const [searchStreamers, setSearchStreamers] = useState([]);
@@ -149,82 +144,39 @@ const StreamingScreen = () => {
 
   return (
     <SafeAreaView style={tw`flex-1 bg-black`}>
-      <View style={tw`flex-row items-center justify-between px-4 py-2`}>
-        <Pressable
-          style={({ pressed }) => pressed && tw`opacity-70`}
-          onPress={() => navigation.goBack()}
-        >
-          <ChevronLeftIcon color="#f4f4f4" size={24} />
-        </Pressable>
-        {user?.id && (
-          <Pressable
-            style={({ pressed }) => pressed && tw`opacity-70`}
-            onPress={() => navigation.navigate("user")}
-          >
-            <Image
-              source={
-                user
-                  ? { uri: user.profile_image_url }
-                  : require("../assets/game/non-member.jpg")
-              }
-              style={{
-                width: 40,
-                height: 40,
-                resizeMode: "cover",
-                borderRadius: 20,
-                cursor: "pointer",
-                marginLeft: 16,
-              }}
-            />
-          </Pressable>
-        )}
-      </View>
+      <Header />
 
       <View style={tw`py-4 px-2`}>
         <View style={tw`pb-4`}>
-          <Text style={tw`text-white text-lg font-semibold`}>
-            라이브 시청하기
-          </Text>
+          <Title>라이브 시청하기</Title>
         </View>
-        <View
-          style={tw`flex-row bg-transparent border border-[#8758FF] items-center px-2 h-12 rounded-lg`}
-        >
-          <MagnifyingGlassIcon color="#ccc" size={18} style={tw`mx-2`} />
-          <TextInput
-            style={tw`w-80 h-10 bg-transparent px-2 py-2 text-white`}
-            placeholder="Search live channels or streamers"
-            autoComplete="false"
-            placeholderTextColor={"#ccc"}
-            value={query}
-            onChangeText={(text) => {
-              setQuery(text);
-            }}
-            onSubmitEditing={onSubmit}
-          />
-        </View>
+        <SearchInput
+          query={query}
+          setQuery={setQuery}
+          placeholder={"Search live channels or streamers"}
+          onSubmit={onSubmit}
+        />
       </View>
 
       <View style={tw`py-4 px-2`}>
         <FlatList
-          keyExtractor={(item, index) => item.id}
+          keyExtractor={(item) => item.id}
           horizontal
           showsHorizontalScrollIndicator={false}
           data={categories}
           renderItem={({ item }) => (
-            <Pressable
+            <PressableItem
               onPress={() => {
                 setSelected(item.id);
               }}
-              style={({ pressed }) =>
-                tw`items-center justify-center px-4 py-2 bg-[#181818] rounded-xl mx-1 ${
-                  selected === item.id ? "bg-[#8758FF]" : ""
-                } ${pressed ? "opacity-70" : ""}`
-              }
+              style={tw`items-center justify-center px-4 py-2 bg-[#181818] rounded-xl mx-1 ${
+                selected === item.id ? "bg-[#8758FF]" : ""
+              }`}
             >
               <Text style={tw`text-gray-200 font-semibold text-sm`}>
                 {item.fullName}
               </Text>
-            </Pressable>
+            </PressableItem>
           )}
         />
       </View>
@@ -235,13 +187,7 @@ const StreamingScreen = () => {
           showsVerticalScrollIndicator={false}
           data={stream}
           renderItem={({ item }) => (
-            <Pressable
-              style={({ pressed }) =>
-                tw`relative w-80 h-48 mx-auto my-2 ${
-                  pressed ? "opacity-70" : ""
-                }`
-              }
-            >
+            <PressableItem style={tw`relative w-80 h-48 mx-auto my-2`}>
               <Image
                 source={{
                   uri: item.thumbnail_url
@@ -265,7 +211,7 @@ const StreamingScreen = () => {
                   </Text>
                 </View>
               </View>
-            </Pressable>
+            </PressableItem>
           )}
         />
       </ScrollView>

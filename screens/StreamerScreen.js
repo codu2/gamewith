@@ -1,11 +1,4 @@
-import {
-  View,
-  TouchableOpacity,
-  Image,
-  Text,
-  FlatList,
-  Pressable,
-} from "react-native";
+import { View, Image, Text, FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
 import tw from "twrnc";
 import { useSelector } from "react-redux";
@@ -14,6 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import { ChevronLeftIcon, EyeIcon } from "react-native-heroicons/outline";
 import { PlayIcon } from "react-native-heroicons/solid";
 import { CLIENT_ID, TOKEN } from "@env";
+import PressableItem from "../components/StreamerItem";
 
 const StreamerScreen = ({ route }) => {
   const user = useSelector(selectUser);
@@ -122,17 +116,11 @@ const StreamerScreen = ({ route }) => {
         <View
           style={tw`absolute top-14 w-full flex flex-row items-center justify-between px-4 pb-2`}
         >
-          <Pressable
-            style={({ pressed }) => pressed && tw`opacity-70`}
-            onPress={() => navigation.goBack()}
-          >
+          <PressableItem onPress={() => navigation.goBack()}>
             <ChevronLeftIcon color="#f4f4f4" size={24} />
-          </Pressable>
+          </PressableItem>
           {user?.id && (
-            <Pressable
-              style={({ pressed }) => pressed && tw`opacity-70`}
-              onPress={() => navigation.navigate("user")}
-            >
+            <PressableItem onPress={() => navigation.navigate("user")}>
               <Image
                 source={{ uri: user.profile_image_url }}
                 style={{
@@ -144,9 +132,10 @@ const StreamerScreen = ({ route }) => {
                   marginLeft: 16,
                 }}
               />
-            </Pressable>
+            </PressableItem>
           )}
         </View>
+
         <View style={tw`absolute top-28 w-full`}>
           <View style={tw`w-full flex-row items-center justify-evenly`}>
             <View
@@ -235,10 +224,7 @@ const StreamerScreen = ({ route }) => {
 
       <View style={tw`py-4 px-2 bg-[#0d0d0d] flex-1`}>
         <View style={tw`flex-row items-center justify-evenly mt-6 mb-12`}>
-          <Pressable
-            style={({ pressed }) => pressed && tw`opacity-70`}
-            onPress={() => setSelected("stream")}
-          >
+          <PressableItem onPress={() => setSelected("stream")}>
             <Text
               style={tw`${
                 selected === "stream" ? "text-[#8756FF]" : "text-gray-300"
@@ -246,11 +232,8 @@ const StreamerScreen = ({ route }) => {
             >
               라이브
             </Text>
-          </Pressable>
-          <Pressable
-            style={({ pressed }) => pressed && tw`opacity-70`}
-            onPress={() => setSelected("video")}
-          >
+          </PressableItem>
+          <PressableItem onPress={() => setSelected("video")}>
             <Text
               style={tw`${
                 selected === "video" ? "text-[#8756FF]" : "text-gray-300"
@@ -258,11 +241,8 @@ const StreamerScreen = ({ route }) => {
             >
               비디오
             </Text>
-          </Pressable>
-          <Pressable
-            style={({ pressed }) => pressed && tw`opacity-70`}
-            onPress={() => setSelected("clip")}
-          >
+          </PressableItem>
+          <PressableItem onPress={() => setSelected("clip")}>
             <Text
               style={tw`${
                 selected === "clip" ? "text-[#8756FF]" : "text-gray-300"
@@ -270,7 +250,7 @@ const StreamerScreen = ({ route }) => {
             >
               클립
             </Text>
-          </Pressable>
+          </PressableItem>
         </View>
 
         {selected === "stream" && (
@@ -278,15 +258,11 @@ const StreamerScreen = ({ route }) => {
             {isLive?.is_live ? (
               <FlatList
                 horizontal
-                keyExtractor={(item, index) => item.id}
+                keyExtractor={(item) => item.id}
                 showsHorizontalScrollIndicator={false}
                 data={streams}
                 renderItem={({ item }) => (
-                  <Pressable
-                    style={({ pressed }) =>
-                      tw`relative w-92 h-52 mx-2 ${pressed ? "opacity-70" : ""}`
-                    }
-                  >
+                  <PressableItem style={tw`relative w-92 h-52 mx-2`}>
                     <Image
                       source={{
                         uri: item?.thumbnail_url
@@ -314,7 +290,7 @@ const StreamerScreen = ({ route }) => {
                         </Text>
                       </View>
                     </View>
-                  </Pressable>
+                  </PressableItem>
                 )}
               />
             ) : (
@@ -329,15 +305,11 @@ const StreamerScreen = ({ route }) => {
           <View style={tw`w-full flex items-center`}>
             <FlatList
               horizontal
-              keyExtractor={(item, index) => item.id}
+              keyExtractor={(item) => item.id}
               showsHorizontalScrollIndicator={false}
               data={videos.filter((item) => item.thumbnail_url)}
               renderItem={({ item }) => (
-                <Pressable
-                  style={({ pressed }) =>
-                    tw`relative w-80 h-48 mx-2 ${pressed ? "opacity-70" : ""}`
-                  }
-                >
+                <PressableItem style={tw`relative w-80 h-48 mx-2`}>
                   <Image
                     source={{
                       uri: item?.thumbnail_url
@@ -349,7 +321,7 @@ const StreamerScreen = ({ route }) => {
                   <View style={tw`absolute top-18 left-34`}>
                     <PlayIcon color="#f4f4f4" size={32} />
                   </View>
-                </Pressable>
+                </PressableItem>
               )}
             />
           </View>
@@ -358,15 +330,11 @@ const StreamerScreen = ({ route }) => {
           <View style={tw`w-full flex items-center`}>
             <FlatList
               horizontal
-              keyExtractor={(item, index) => item.id}
+              keyExtractor={(item) => item.id}
               showsHorizontalScrollIndicator={false}
               data={clips.filter((item) => item.thumbnail_url)}
               renderItem={({ item }) => (
-                <Pressable
-                  style={({ pressed }) =>
-                    tw`relative w-80 h-48 mx-2 ${pressed ? "opacity-70" : ""}`
-                  }
-                >
+                <PressableItem style={tw`relative w-80 h-48 mx-2`}>
                   <Image
                     source={{
                       uri: item?.thumbnail_url,
@@ -376,7 +344,7 @@ const StreamerScreen = ({ route }) => {
                   <View style={tw`absolute top-18 left-34`}>
                     <PlayIcon color="#f4f4f4" size={32} />
                   </View>
-                </Pressable>
+                </PressableItem>
               )}
             />
           </View>

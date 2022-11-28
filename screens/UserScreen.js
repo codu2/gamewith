@@ -1,11 +1,4 @@
-import {
-  View,
-  Image,
-  SafeAreaView,
-  Text,
-  FlatList,
-  Pressable,
-} from "react-native";
+import { View, Image, SafeAreaView, Text, FlatList } from "react-native";
 import React from "react";
 import tw from "twrnc";
 import { ChevronLeftIcon } from "react-native-heroicons/outline";
@@ -13,6 +6,7 @@ import { Cog6ToothIcon } from "react-native-heroicons/solid";
 import { useSelector } from "react-redux";
 import { selectFollows, selectUser } from "../slices/userSlice";
 import { useNavigation } from "@react-navigation/native";
+import PressableItem from "../components/ui/PressableItem";
 
 const UserScreen = () => {
   const user = useSelector(selectUser);
@@ -22,15 +16,12 @@ const UserScreen = () => {
   return (
     <SafeAreaView style={tw`flex-1 bg-black`}>
       <View style={tw`flex-row items-center justify-between px-4 py-2`}>
-        <Pressable
-          style={({ pressed }) => pressed && tw`opacity-70`}
-          onPress={() => navigation.goBack()}
-        >
+        <PressableItem onPress={() => navigation.goBack()}>
           <ChevronLeftIcon color="#f4f4f4" size={24} />
-        </Pressable>
-        <Pressable style={({ pressed }) => pressed && tw`opacity-70`}>
+        </PressableItem>
+        <PressableItem>
           <Cog6ToothIcon color="#f4f4f4" size={24} />
-        </Pressable>
+        </PressableItem>
       </View>
 
       <View style={tw`py-4 px-2`}>
@@ -77,7 +68,7 @@ const UserScreen = () => {
           <Text style={tw`text-white text-base font-semibold`}>팔로잉</Text>
         </View>
         <FlatList
-          keyExtractor={(item, index) => item.id}
+          keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           data={follows}
           renderItem={({ item }) => (
@@ -95,16 +86,12 @@ const UserScreen = () => {
                   </Text>
                 </View>
               </View>
-              <Pressable
-                style={({ pressed }) =>
-                  tw`border border-[#8758FF] px-2 py-1 ${
-                    pressed ? "opacity-70" : ""
-                  }`
-                }
+              <PressableItem
+                style={tw`border border-[#8758FF] px-2 py-1`}
                 onPress={() => navigation.navigate("streamer", item)}
               >
                 <Text style={tw`text-[#8758FF]`}>Watch</Text>
-              </Pressable>
+              </PressableItem>
             </View>
           )}
         />

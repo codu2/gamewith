@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -5,20 +6,19 @@ import {
   Image,
   FlatList,
   ScrollView,
-  Pressable,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import tw from "twrnc";
 import {
   BellIcon,
   EllipsisHorizontalIcon,
   EyeIcon,
 } from "react-native-heroicons/solid";
-import { CLIENT_ID, CLIENT_SECRET, TOKEN, USER_ID, ACCESS_TOKEN } from "@env";
-import axios from "axios";
+import { CLIENT_ID, TOKEN } from "@env";
 import { useNavigation } from "@react-navigation/native";
 import { selectUser, selectFollows } from "../slices/userSlice";
 import { useSelector } from "react-redux";
+import Title from "../components/ui/Title";
+import PressableItem from "../components/ui/PressableItem";
 
 const categories = [
   {
@@ -91,15 +91,6 @@ const HomeScreen = () => {
   const [soundtrack, setSoundtrack] = useState([]);
 
   useEffect(() => {
-    /*
-    const getAppToken = async () => {
-      const res = await axios.post(
-        `https://id.twitch.tv/oauth2/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&grant_type=client_credentials`
-      );
-      const data = await res.data;
-    };
-    getAppToken();
-    */
     const getData = async () => {
       const getLive = await fetch(
         `https://api.twitch.tv/helix/streams?first=5`,
@@ -138,13 +129,10 @@ const HomeScreen = () => {
         </Text>
         {user?.id && (
           <View style={tw`flex flex-row items-center`}>
-            <Pressable style={({ pressed }) => pressed && tw`opacity-70`}>
+            <PressableItem>
               <BellIcon color="#f4f4f4" size={24} />
-            </Pressable>
-            <Pressable
-              style={({ pressed }) => pressed && tw`opacity-70`}
-              onPress={() => navigation.navigate("user")}
-            >
+            </PressableItem>
+            <PressableItem onPress={() => navigation.navigate("user")}>
               <Image
                 source={
                   user
@@ -160,7 +148,7 @@ const HomeScreen = () => {
                   marginLeft: 16,
                 }}
               />
-            </Pressable>
+            </PressableItem>
           </View>
         )}
       </View>
@@ -170,27 +158,23 @@ const HomeScreen = () => {
           {user?.id && (
             <View style={tw`py-4 px-2`}>
               <View style={tw`pb-4`}>
-                <Text style={tw`text-white text-lg font-semibold`}>
-                  팔로우한 채널
-                </Text>
+                <Title>팔로우한 채널</Title>
               </View>
               <FlatList
                 horizontal
-                keyExtractor={(item, index) => item.id}
+                keyExtractor={(item) => item.id}
                 showsHorizontalScrollIndicator={false}
                 data={follows}
                 renderItem={({ item }) => (
-                  <Pressable
+                  <PressableItem
                     onPress={() => navigation.navigate("streamer", item)}
-                    style={({ pressed }) =>
-                      tw`h-14 w-14 mx-2 ${pressed ? "opacity-70" : ""}`
-                    }
+                    style={tw`h-14 w-14 mx-2`}
                   >
                     <Image
                       source={{ uri: item.profile_image_url }}
                       style={tw`h-14 w-14 rounded-full`}
                     />
-                  </Pressable>
+                  </PressableItem>
                 )}
               />
             </View>
@@ -198,21 +182,19 @@ const HomeScreen = () => {
 
           <View style={tw`py-4 px-2`}>
             <View style={tw`flex flex-row items-center justify-between pb-4`}>
-              <Text style={tw`text-white text-lg font-semibold`}>카테고리</Text>
-              <Pressable style={({ pressed }) => pressed && tw`opacity-70`}>
+              <Title>카테고리</Title>
+              <PressableItem>
                 <EllipsisHorizontalIcon color="#fff" size={28} />
-              </Pressable>
+              </PressableItem>
             </View>
             <FlatList
               horizontal
-              keyExtractor={(item, index) => item.id}
+              keyExtractor={(item) => item.id}
               showsHorizontalScrollIndicator={false}
               data={categories}
               renderItem={({ item }) => (
-                <Pressable
-                  style={({ pressed }) =>
-                    tw`relative h-44 w-36 mx-2 ${pressed ? "opacity-70" : ""}`
-                  }
+                <PressableItem
+                  style={tw`relative h-44 w-36 mx-2`}
                   onPress={() => navigation.navigate("category", item)}
                 >
                   <Image
@@ -224,31 +206,25 @@ const HomeScreen = () => {
                   >
                     {item.name}
                   </Text>
-                </Pressable>
+                </PressableItem>
               )}
             />
           </View>
 
           <View style={tw`py-4 px-2`}>
             <View style={tw`flex flex-row items-center justify-between pb-4`}>
-              <Text style={tw`text-white text-lg font-semibold`}>
-                실시간 라이브
-              </Text>
-              <Pressable style={({ pressed }) => pressed && tw`opacity-70`}>
+              <Title>실시간 라이브</Title>
+              <PressableItem>
                 <EllipsisHorizontalIcon color="#fff" size={28} />
-              </Pressable>
+              </PressableItem>
             </View>
             <FlatList
               horizontal
-              keyExtractor={(item, index) => item.id.videoId}
+              keyExtractor={(item) => item.id}
               showsHorizontalScrollIndicator={false}
               data={live}
               renderItem={({ item }) => (
-                <Pressable
-                  style={({ pressed }) =>
-                    tw`relative w-72 h-44 mx-2 ${pressed ? "opacity-70" : ""}`
-                  }
-                >
+                <PressableItem style={tw`relative w-72 h-44 mx-2`}>
                   <Image
                     source={{
                       uri: item.thumbnail_url
@@ -276,32 +252,25 @@ const HomeScreen = () => {
                       </Text>
                     </View>
                   </View>
-                </Pressable>
+                </PressableItem>
               )}
             />
           </View>
 
           <View style={tw`py-4 px-2 mb-16`}>
             <View style={tw`flex flex-row items-center justify-between pb-4`}>
-              <Text style={tw`text-white text-lg font-semibold`}>
-                사운드트랙 플레이리스트
-              </Text>
-              <Pressable style={({ pressed }) => pressed && tw`opacity-70`}>
+              <Title>사운드트랙 플레이리스트</Title>
+              <PressableItem>
                 <EllipsisHorizontalIcon color="#fff" size={28} />
-              </Pressable>
+              </PressableItem>
             </View>
             <FlatList
               horizontal
-              keyExtractor={(item, index) => item.id}
+              keyExtractor={(item) => item.id}
               showsHorizontalScrollIndicator={false}
               data={soundtrack}
               renderItem={({ item }) => (
-                <Pressable
-                  key={item.id}
-                  style={({ pressed }) =>
-                    tw`w-40 h-40 mx-2 ${pressed ? "opacity-70" : ""}`
-                  }
-                >
+                <PressableItem style={tw`w-40 h-40 mx-2`}>
                   <Image
                     source={{
                       uri: item.image_url
@@ -310,7 +279,7 @@ const HomeScreen = () => {
                     }}
                     style={tw`w-40 h-40 rounded-lg`}
                   />
-                </Pressable>
+                </PressableItem>
               )}
             />
           </View>

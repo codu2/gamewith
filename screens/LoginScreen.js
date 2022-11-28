@@ -1,23 +1,31 @@
-import {
-  View,
-  Image,
-  Text,
-  TextInput,
-  ScrollView,
-  Pressable,
-} from "react-native";
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import { View, Image, Text, ScrollView, Pressable } from "react-native";
 import tw from "twrnc";
 import { useNavigation } from "@react-navigation/native";
 import { CLIENT_ID, CLIENT_SECRET } from "@env";
 import * as AuthSession from "expo-auth-session";
-import { signInUser, setFollows, setAccessToken } from "../slices/userSlice";
 import { useDispatch } from "react-redux";
+import { signInUser, setFollows, setAccessToken } from "../slices/userSlice";
+import Input from "../components/ui/Input";
+import PressableItem from "../components/ui/PressableItem";
+//import axios from "axios";
 
 const LoginScreen = () => {
   const [selected, setSelected] = useState("login");
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  /*
+  useEffect(() => {
+    const getAppToken = async () => {
+      const res = await axios.post(
+        `https://id.twitch.tv/oauth2/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&grant_type=client_credentials`
+      );
+      const data = await res.data;
+    };
+    getAppToken();
+  }, []);
+  */
 
   const signInWithTwitch = async () => {
     const redirect_url = AuthSession.getRedirectUrl();
@@ -114,62 +122,13 @@ const LoginScreen = () => {
           alwaysBounceVertical={false}
           contentContainerStyle={tw`w-full flex items-center mt-4`}
         >
-          <View>
-            <Text style={tw`text-base font-semibold text-gray-300`}>
-              아이디
-            </Text>
-            <TextInput
-              style={tw`w-80 h-10 bg-transparent border border-[#8758FF] rounded-lg mt-2 mb-4 px-2 py-2 text-white`}
-              autoComplete="false"
-              placeholderTextColor={"#ccc"}
-            />
-          </View>
-          <View>
-            <Text style={tw`text-base font-semibold text-gray-300`}>
-              비밀번호
-            </Text>
-            <TextInput
-              style={tw`w-80 h-10 bg-transparent border border-[#8758FF] rounded-lg mt-2 mb-4 px-2 py-2 text-white`}
-              autoComplete="false"
-              placeholderTextColor={"#ccc"}
-            />
-          </View>
+          <Input label="아이디" />
+          <Input label="비밀번호" />
           {selected === "signup" && (
             <>
-              <View>
-                <Text style={tw`text-base font-semibold text-gray-300`}>
-                  비밀번호 확인
-                </Text>
-                <TextInput
-                  style={tw`w-80 h-10 bg-transparent border border-[#8758FF] rounded-lg mt-2 mb-6 px-2 py-2 text-white`}
-                  autoComplete="false"
-                  placeholderTextColor={"#ccc"}
-                />
-              </View>
-              <View>
-                <Text style={tw`text-base font-semibold text-gray-300`}>
-                  생년월일
-                </Text>
-                <TextInput
-                  style={tw`w-80 h-10 bg-transparent border border-[#8758FF] rounded-lg mt-2 mb-6 px-2 py-2 text-white`}
-                  autoComplete="false"
-                  placeholderTextColor={"#ccc"}
-                />
-              </View>
-              <View>
-                <Text style={tw`text-base font-semibold text-gray-300`}>
-                  전화번호
-                  <Text style={tw`text-sm font-light`}>
-                    {" "}
-                    (인증이 필요합니다)
-                  </Text>
-                </Text>
-                <TextInput
-                  style={tw`w-80 h-10 bg-transparent border border-[#8758FF] rounded-lg mt-2 mb-6 px-2 py-2 text-white`}
-                  autoComplete="false"
-                  placeholderTextColor={"#ccc"}
-                />
-              </View>
+              <Input label="비밀번호 확인" />
+              <Input label="생년월일" />
+              <Input label="전화번호" />
             </>
           )}
 
@@ -199,14 +158,14 @@ const LoginScreen = () => {
                 Twitch로 로그인하기
               </Text>
             </Pressable>
-            <Pressable
+            <PressableItem
               onPress={() => navigation.navigate("navigation")}
-              style={({ pressed }) => tw`my-2 ${pressed ? "opacity-70" : ""}`}
+              style={tw`my-2`}
             >
               <Text style={tw`text-[#8758FF] text-sm text-center`}>
                 비회원으로 이용하기
               </Text>
-            </Pressable>
+            </PressableItem>
           </View>
         </ScrollView>
       </View>
