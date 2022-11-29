@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  SafeAreaView,
-  Image,
-  FlatList,
-  ScrollView,
-} from "react-native";
+import { View, Text, SafeAreaView, Image, FlatList } from "react-native";
 import tw from "twrnc";
 import { EllipsisHorizontalIcon } from "react-native-heroicons/outline";
 import { CLIENT_ID, TOKEN, ACCESS_TOKEN } from "@env";
@@ -178,55 +171,59 @@ const DiscoverScreen = () => {
         />
       </View>
 
-      <ScrollView>
-        <View style={tw`py-4 px-2`}>
-          <View style={tw`flex flex-row items-center justify-between pb-4`}>
-            <Text style={tw`text-white text-lg font-semibold`}>
-              인기 실시간 게임
-            </Text>
-            <PressableItem>
-              <EllipsisHorizontalIcon color="#fff" size={28} />
-            </PressableItem>
-          </View>
-          <FlatList
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={trendingGame}
-            renderItem={({ item }) => (
-              <PressableItem
-                style={tw`mx-2`}
-                onPress={() => navigation.navigate("category", item)}
-              >
-                <Image
-                  source={{
-                    uri: item?.box_art_url
-                      ?.replace("{width}", 240)
-                      .replace("{height}", 240),
-                  }}
-                  style={tw`w-60 h-60 rounded-xl`}
-                />
-              </PressableItem>
-            )}
-          />
-        </View>
-
-        <View style={tw`py-4 px-2 mb-16`}>
-          <View style={tw`flex flex-row items-center justify-between pb-4`}>
-            <Title>스트리머 순위</Title>
-            <PressableItem>
-              <EllipsisHorizontalIcon color="#fff" size={28} />
-            </PressableItem>
-          </View>
-          <FlatList
-            style={tw`max-h-80`}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-            data={streamers}
-            renderItem={({ item }) => <StreamerItem item={item} />}
-          />
-        </View>
-      </ScrollView>
+      <View style={tw`flex-1`}>
+        <FlatList
+          ListHeaderComponent={
+            <View style={tw`py-4 px-2`}>
+              <View style={tw`flex flex-row items-center justify-between pb-4`}>
+                <Text style={tw`text-white text-lg font-semibold`}>
+                  인기 실시간 게임
+                </Text>
+                <PressableItem>
+                  <EllipsisHorizontalIcon color="#fff" size={28} />
+                </PressableItem>
+              </View>
+              <FlatList
+                keyExtractor={(item) => item.id}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={trendingGame}
+                renderItem={({ item }) => (
+                  <PressableItem
+                    style={tw`mx-2`}
+                    onPress={() => navigation.navigate("category", item)}
+                  >
+                    <Image
+                      source={{
+                        uri: item?.box_art_url
+                          ?.replace("{width}", 240)
+                          .replace("{height}", 240),
+                      }}
+                      style={tw`w-60 h-60 rounded-xl`}
+                    />
+                  </PressableItem>
+                )}
+              />
+            </View>
+          }
+          ListFooterComponent={
+            <View style={tw`py-4 px-2 mb-16`}>
+              <View style={tw`flex flex-row items-center justify-between pb-4`}>
+                <Title>스트리머 순위</Title>
+                <PressableItem>
+                  <EllipsisHorizontalIcon color="#fff" size={28} />
+                </PressableItem>
+              </View>
+              <FlatList
+                keyExtractor={(item) => item.id}
+                showsVerticalScrollIndicator={false}
+                data={streamers}
+                renderItem={({ item }) => <StreamerItem item={item} />}
+              />
+            </View>
+          }
+        />
+      </View>
     </SafeAreaView>
   );
 };

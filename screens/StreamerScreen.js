@@ -1,17 +1,13 @@
+import { useEffect, useState } from "react";
 import { View, Image, Text, FlatList } from "react-native";
-import React, { useEffect, useState } from "react";
 import tw from "twrnc";
-import { useSelector } from "react-redux";
-import { selectUser } from "../slices/userSlice";
-import { useNavigation } from "@react-navigation/native";
-import { ChevronLeftIcon, EyeIcon } from "react-native-heroicons/outline";
+import { EyeIcon } from "react-native-heroicons/outline";
 import { PlayIcon } from "react-native-heroicons/solid";
 import { CLIENT_ID, TOKEN } from "@env";
-import PressableItem from "../components/StreamerItem";
+import PressableItem from "../components/ui/PressableItem";
+import Header from "../components/ui/Header";
 
 const StreamerScreen = ({ route }) => {
-  const user = useSelector(selectUser);
-  const navigation = useNavigation();
   const [channelInfo, setChannelInfo] = useState({});
   const [channelTeam, setChannelTeam] = useState({});
   const [isLive, setIsLive] = useState({});
@@ -113,28 +109,7 @@ const StreamerScreen = ({ route }) => {
           source={require("../assets/game/banner.jpeg")}
           style={tw`w-full h-100 opacity-50`}
         />
-        <View
-          style={tw`absolute top-14 w-full flex flex-row items-center justify-between px-4 pb-2`}
-        >
-          <PressableItem onPress={() => navigation.goBack()}>
-            <ChevronLeftIcon color="#f4f4f4" size={24} />
-          </PressableItem>
-          {user?.id && (
-            <PressableItem onPress={() => navigation.navigate("user")}>
-              <Image
-                source={{ uri: user.profile_image_url }}
-                style={{
-                  width: 40,
-                  height: 40,
-                  resizeMode: "cover",
-                  borderRadius: 20,
-                  cursor: "pointer",
-                  marginLeft: 16,
-                }}
-              />
-            </PressableItem>
-          )}
-        </View>
+        <Header style={tw`absolute top-14 w-full`} />
 
         <View style={tw`absolute top-28 w-full`}>
           <View style={tw`w-full flex-row items-center justify-evenly`}>

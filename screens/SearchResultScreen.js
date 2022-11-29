@@ -1,55 +1,14 @@
-import {
-  SafeAreaView,
-  View,
-  Image,
-  Text,
-  FlatList,
-  ScrollView,
-  Pressable,
-} from "react-native";
+import { SafeAreaView, View, Image, Text, FlatList } from "react-native";
 import React from "react";
 import tw from "twrnc";
-import { ChevronLeftIcon } from "react-native-heroicons/outline";
-import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
-import { selectUser } from "../slices/userSlice";
+import Header from "../components/ui/Header";
+import Title from "../components/ui/Title";
+import PressableItem from "../components/ui/PressableItem";
 
 const SearchResultScreen = ({ route }) => {
-  const navigation = useNavigation();
-  const user = useSelector(selectUser);
-
   return (
     <SafeAreaView style={tw`flex flex-1 bg-black`}>
-      <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
-        <Pressable
-          style={({ pressed }) => pressed && tw`opacity-70`}
-          onPress={() => navigation.goBack()}
-        >
-          <ChevronLeftIcon color="#f4f4f4" size={24} />
-        </Pressable>
-        {user?.id && (
-          <Pressable
-            style={({ pressed }) => pressed && tw`opacity-70`}
-            onPress={() => navigation.navigate("user")}
-          >
-            <Image
-              source={
-                user
-                  ? { uri: user.profile_image_url }
-                  : require("../assets/game/non-member.jpg")
-              }
-              style={{
-                width: 40,
-                height: 40,
-                resizeMode: "cover",
-                borderRadius: 20,
-                cursor: "pointer",
-                marginLeft: 16,
-              }}
-            />
-          </Pressable>
-        )}
-      </View>
+      <Header />
 
       <View style={tw`py-4 px-2`}>
         <Text style={tw`text-white text-lg text-center`}>
@@ -61,97 +20,93 @@ const SearchResultScreen = ({ route }) => {
         </Text>
       </View>
 
-      <ScrollView style={tw`flex flex-1 mb-4  bg-[#0d0d0d]`}>
-        <View style={tw`py-4 px-2`}>
-          <View style={tw`py-2`}>
-            <Text style={tw`text-white font-semibold text-lg`}>게임</Text>
-          </View>
-          {route.params.games.length > 0 ? (
-            <FlatList
-              horizontal
-              keyExtractor={(item, index) => item.id}
-              showsHorizontalScrollIndicator={false}
-              data={route.params.games}
-              renderItem={({ item }) => (
-                <Pressable
-                  key={item.id}
-                  style={({ pressed }) =>
-                    tw`h-32 w-24 mx-2 ${pressed ? "opacity-70" : ""}`
-                  }
-                >
-                  <Image
-                    source={{ uri: item.box_art_url }}
-                    style={tw`w-24 h-32 rounded-lg`}
-                  />
-                </Pressable>
-              )}
-            />
-          ) : (
-            <View style={tw`w-full my-2`}>
-              <Text style={tw`text-gray-400 text-center`}>
-                검색 결과가 없습니다.
-              </Text>
+      <FlatList
+        ListHeaderComponent={
+          <View style={tw`py-4 px-2 w-full`}>
+            <View style={tw`py-2`}>
+              <Title>게임</Title>
             </View>
-          )}
-        </View>
-
-        <View style={tw`py-4 px-2`}>
-          <View style={tw`py-2`}>
-            <Text style={tw`text-white font-semibold text-lg`}>스트리머</Text>
-          </View>
-          {route.params.streamers.length > 0 ? (
-            <FlatList
-              style={tw`max-h-96`}
-              keyExtractor={(item) => item.id}
-              showsVerticalScrollIndicator={false}
-              data={route.params.streamers}
-              renderItem={({ item }) => (
-                <View
-                  style={tw`flex flex-row items-center justify-between w-full h-18 bg-[#181818] rounded-lg px-4 py-2 my-2`}
-                >
-                  <View style={tw`flex flex-row items-center`}>
-                    <Image
-                      source={{ uri: item.thumbnail_url }}
-                      style={tw`w-12 h-12 rounded-full mr-4`}
-                    />
-                    <View style={tw`min-h-10 flex justify-center`}>
-                      <Text
-                        numberOfLines={1}
-                        style={tw`text-white font-semibold`}
-                      >
-                        {item.display_name}
+            {route.params.games.length > 0 ? (
+              <FlatList
+                numColumns={2}
+                keyExtractor={(item) => item.id}
+                showsVerticalScrollIndicator={false}
+                data={route.params.games}
+                renderItem={({ item }) => (
+                  <PressableItem style={tw`flex-1 mx-2 my-1`}>
+                    <View
+                      style={tw`flex-1 items-center justify-center bg-[#181818] rounded-lg px-2 py-2`}
+                    >
+                      <Text style={tw`text-white font-semibold text-center`}>
+                        {item.name}
                       </Text>
-                      {item.game_name && (
-                        <Text
-                          numberOfLines={2}
-                          style={tw`max-w-48 text-[#8758FF] mr-2 mt-1`}
-                        >
-                          {item.game_name}
-                        </Text>
-                      )}
                     </View>
-                  </View>
-                  <Pressable
-                    style={({ pressed }) =>
-                      tw`border border-[#8758FF] px-2 py-1 ${
-                        pressed ? "opacity-70" : ""
-                      }`
-                    }
-                  >
-                    <Text style={tw`text-[#8758FF]`}>Watch</Text>
-                  </Pressable>
-                </View>
-              )}
-            />
-          ) : (
-            <View style={tw`w-full my-2`}>
-              <Text style={tw`text-gray-400 text-center`}>
-                검색 결과가 없습니다.
-              </Text>
+                  </PressableItem>
+                )}
+              />
+            ) : (
+              <View style={tw`w-full my-2`}>
+                <Text style={tw`text-gray-400 text-center`}>
+                  검색 결과가 없습니다.
+                </Text>
+              </View>
+            )}
+          </View>
+        }
+        ListFooterComponent={
+          <View style={tw`py-4 px-2`}>
+            <View style={tw`py-2`}>
+              <Title>스트리머</Title>
             </View>
-          )}
-        </View>
-      </ScrollView>
+            {route.params.streamers.length > 0 ? (
+              <FlatList
+                keyExtractor={(item) => item.id}
+                showsVerticalScrollIndicator={false}
+                data={route.params.streamers}
+                renderItem={({ item }) => (
+                  <View
+                    style={tw`flex flex-row items-center justify-between w-full h-18 bg-[#181818] rounded-lg px-4 py-2 my-2`}
+                  >
+                    <View style={tw`flex flex-row items-center`}>
+                      <Image
+                        source={{ uri: item.thumbnail_url }}
+                        style={tw`w-12 h-12 rounded-full mr-4`}
+                      />
+                      <View style={tw`min-h-10 flex justify-center`}>
+                        <Text
+                          numberOfLines={1}
+                          style={tw`text-white font-semibold`}
+                        >
+                          {item.display_name}
+                        </Text>
+                        {item.game_name && (
+                          <Text
+                            numberOfLines={2}
+                            style={tw`max-w-48 text-[#8758FF] mr-2 mt-1`}
+                          >
+                            {item.game_name}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                    <PressableItem
+                      style={tw`border border-[#8758FF] px-2 py-1`}
+                    >
+                      <Text style={tw`text-[#8758FF]`}>Watch</Text>
+                    </PressableItem>
+                  </View>
+                )}
+              />
+            ) : (
+              <View style={tw`w-full my-2`}>
+                <Text style={tw`text-gray-400 text-center`}>
+                  검색 결과가 없습니다.
+                </Text>
+              </View>
+            )}
+          </View>
+        }
+      />
     </SafeAreaView>
   );
 };

@@ -181,40 +181,47 @@ const StreamingScreen = () => {
         />
       </View>
 
-      <ScrollView style={tw`flex-1 py-4 px-2 mt-2 mb-18 bg-[#0d0d0d]`}>
-        <FlatList
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          data={stream}
-          renderItem={({ item }) => (
-            <PressableItem style={tw`relative w-80 h-48 mx-auto my-2`}>
-              <Image
-                source={{
-                  uri: item.thumbnail_url
-                    ?.replace("{width}", 320)
-                    .replace("{height}", 192),
-                }}
-                style={tw`w-80 h-48 rounded-lg`}
-              />
-              <View style={tw`absolute top-3 left-2 flex flex-row`}>
-                <View
-                  style={tw`bg-red-500 border border-red-500 px-2 py-1 rounded-lg`}
-                >
-                  <Text style={tw`text-white`}>LIVE</Text>
+      <View style={tw`flex-1`}>
+        <ScrollView style={tw`flex-1 py-4 px-2 mt-2 mb-18 bg-[#0d0d0d]`}>
+          <FlatList
+            scrollEnabled={false}
+            keyExtractor={(item) => item.id}
+            showsVerticalScrollIndicator={false}
+            data={stream}
+            renderItem={({ item }) => (
+              <PressableItem style={tw`relative w-80 h-48 mx-auto my-2`}>
+                <Image
+                  source={{
+                    uri: item.thumbnail_url
+                      ?.replace("{width}", 320)
+                      .replace("{height}", 192),
+                  }}
+                  style={tw`w-80 h-48 rounded-lg`}
+                />
+                <View style={tw`absolute top-3 left-2 flex flex-row`}>
+                  <View
+                    style={tw`bg-red-500 border border-red-500 px-2 py-1 rounded-lg`}
+                  >
+                    <Text style={tw`text-white`}>LIVE</Text>
+                  </View>
+                  <View
+                    style={tw`flex flex-row bg-gray-500 border border-gray-500 px-2 py-1 rounded-lg ml-2`}
+                  >
+                    <EyeIcon
+                      color="#fff"
+                      size={16}
+                      style={tw`text-slate-200`}
+                    />
+                    <Text style={tw`text-slate-200 ml-1`}>
+                      {(item.viewer_count / 1000).toFixed(2)}k
+                    </Text>
+                  </View>
                 </View>
-                <View
-                  style={tw`flex flex-row bg-gray-500 border border-gray-500 px-2 py-1 rounded-lg ml-2`}
-                >
-                  <EyeIcon color="#fff" size={16} style={tw`text-slate-200`} />
-                  <Text style={tw`text-slate-200 ml-1`}>
-                    {(item.viewer_count / 1000).toFixed(2)}k
-                  </Text>
-                </View>
-              </View>
-            </PressableItem>
-          )}
-        />
-      </ScrollView>
+              </PressableItem>
+            )}
+          />
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
