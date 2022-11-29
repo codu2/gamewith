@@ -6,12 +6,12 @@ import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../slices/userSlice";
 
-function Header() {
+function Header({ style }) {
   const navigation = useNavigation();
   const user = useSelector(selectUser);
 
   return (
-    <View style={tw`flex-row items-center justify-between px-4 py-2`}>
+    <View style={[tw`flex-row items-center justify-between px-4 py-2`, style]}>
       <PressableItem onPress={() => navigation.goBack()}>
         <ChevronLeftIcon color="#f4f4f4" size={24} />
       </PressableItem>

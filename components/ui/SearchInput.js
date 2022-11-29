@@ -11,6 +11,8 @@ function SearchInput({ query, setQuery, placeholder, onSubmit }) {
       <TextInput
         style={tw`w-80 h-10 bg-transparent px-2 py-2 text-white`}
         placeholder={placeholder}
+        autoCapitalize="none"
+        autoCorrect={false}
         autoComplete="false"
         placeholderTextColor={"#ccc"}
         value={query}
